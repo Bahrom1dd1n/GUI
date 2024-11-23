@@ -47,6 +47,7 @@ class Window {
     bool IsRunning() const;
     void Start();
     void Stop();
+    void Add(Element* elem);
     ~Window();
 
     friend class Button;

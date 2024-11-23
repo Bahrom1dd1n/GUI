@@ -138,6 +138,11 @@ inline void Window::OnKeyDown(uint32_t key) {
     this->focused_element->OnKeyPressed(key);
     this->focused_element->KeyPress(key);
 }
+
+void Window::Add(Element* elem) {
+    this->elements.push_back(elem);
+}
+
 Window::~Window() {
     printf("Window deleted\n");
     SDL_DestroyRenderer(this->main_ren);
