@@ -9,8 +9,8 @@ inline Texture::Texture(const Texture& t) {
     if (!t.info) return;
     this->texture = t.texture;
     this->info = t.info;
-    *this->info++;  // another Texture created on top of SDL_Texture* so ,
-                    // number of Textures using same SDL_Texture increments by 1
+    this->info[0]++;  // another Texture created on top of SDL_Texture* so ,
+                      // number of Textures using same SDL_Texture increments by 1
 }
 inline Texture::Texture(Texture&& t) noexcept {
     if (!t.info) return;
@@ -34,7 +34,7 @@ inline Texture::Texture(const char* path) {
 inline Texture& Texture::operator=(const Texture& t) {
     if (this->info) {
         if (*this->info > 1)
-            *this->info--;
+            this->info[0]--;
         else {
             SDL_DestroyTexture(this->texture);
             delete this->info;
@@ -59,7 +59,7 @@ inline void Texture::Load(const char* path) {
         if (*info == 1) {
             SDL_DestroyTexture(this->texture);
         } else {
-            *info--;
+            info[0]--;
             this->info = new int[3]{1};
         }
     } else
@@ -92,6 +92,6 @@ inline Texture::~Texture() {
             info = nullptr;
             return;
         }
-        *this->info--;
+        this->info[0]--;
     }
 }

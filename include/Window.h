@@ -7,11 +7,6 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <exception>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -37,8 +32,8 @@ class Window {
 
     void OnMouseMove(int x, int y);
 
-    inline void OnTyped(char letter);
-    inline void OnKeyDown(uint32_t key);
+    void OnTyped(char letter);
+    void OnKeyDown(uint32_t key);
 
    public:
     Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,

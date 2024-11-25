@@ -8,8 +8,6 @@
 #include <SDL2/SDL_ttf.h>
 
 #include <cstdint>
-#include <iostream>
-#include <vector>
 
 #include "Texture.h"
 
@@ -25,15 +23,20 @@ class Font {
     static bool ttf_init;
 
    public:
-    inline Font(const Font& t);
+    Font(const Font& t);
 
-    inline Font(Font&& _font) noexcept;
+    Font(Font&& _font) noexcept;
 
-    inline Font(const char* font_path, size_t font_size, const SDL_Color& font_color);
-    inline Font& operator=(const Font& _font);
-    inline uint32_t GetLetterHeight() const;
+    Font(const char* font_path, size_t font_size, const SDL_Color& font_color);
 
-    inline uint32_t GetLetterWidth(char letter) const;
+    Font& operator=(const Font& _font);
+    // retunr height of font
+    inline uint32_t GetLetterHeight() const { return this->font_info->letter_height; };
+    // retunr width of texture of given letter
+    inline uint32_t GetLetterWidth(char letter) const {
+        if (letter < 32 || letter > 126) return 0;
+        return this->font_info->letter_width[letter - 32];
+    };
 
     // DrawText return width of Drawn text
     size_t DrawText(int x, int y, const char* text, size_t length) const;

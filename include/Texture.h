@@ -19,7 +19,7 @@ class Texture {
     inline Texture(const Texture& t);
     inline Texture(Texture&& t) noexcept;
     inline Texture(const char* path);
-    inline Texture(SDL_Texture* texture);
+    Texture(SDL_Texture* texture);
     inline Texture& operator=(const Texture& t);
 
     inline void Load(const char* path);
@@ -32,8 +32,7 @@ class Texture {
     inline int GetHeight() const;
 
     inline int GetWidth() const;
-
-    inline ~Texture();
+    ~Texture();
 };
 
 #endif  // !__SHARED_TEXUTRE__

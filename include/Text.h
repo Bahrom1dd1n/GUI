@@ -11,7 +11,6 @@
 #include <SDL2/SDL_render.h>
 
 #include <cstdint>
-#include <iostream>
 
 #include "Element.h"
 #include "Font.h"
@@ -28,21 +27,21 @@ class Text : public Element {
     Element* parent = nullptr;
 
    public:
-    inline Text(Window* win, int x, int y, const std::string& text, const Font& font);
-    inline void SetX(int x);
-    inline void SetY(int y);
-    inline void SetPosition(int x, int y);
-    inline uint32_t GetWidth() const;
-    inline uint32_t GetHeight() const;
-    inline const std::string& GetText() const;
+    Text(Window* win, int x, int y, const std::string& text, const Font& font);
+    void SetX(int x);
+    void SetY(int y);
+    void SetPosition(int x, int y);
+    inline uint32_t GetWidth() const { return this->rect.w; };
+    inline uint32_t GetHeight() const { return this->rect.h; };
+    inline const std::string& GetText() const { return this->text; };
     void Draw() override;
     void Click() override;
-    void Focuse() override;
-    void Unfocuse() override;
-    void Hover() override;
-    void UnHover() override;
-    void KeyPress(uint32_t key) override;
-    void Type(char) override;
+    // void Focuse() override;
+    // void Unfocuse() override;
+    // void Hover() override;
+    // void UnHover() override;
+    // void KeyPress(uint32_t key) override;
+    // void Type(char) override;
     bool ContainPoint(int x, int y) override;
     ~Text();
 };

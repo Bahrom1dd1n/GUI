@@ -62,14 +62,6 @@ inline Font& Font::operator=(const Font& _font) {
     }
     return *this;
 }
-inline uint32_t Font::GetLetterHeight() const {
-    return this->font_info->letter_height;
-}
-
-inline uint32_t Font::GetLetterWidth(char letter) const {
-    if (letter < 32) return 0;
-    return this->font_info->letter_width[letter - 32];
-}
 
 // DrawText return width of Drawn text
 size_t Font::DrawText(int x, int y, const char* text, size_t length) const {
