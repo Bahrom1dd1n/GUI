@@ -14,24 +14,24 @@ class Texture {
     int* info = nullptr;  // information about texture, info[0] = use_count , info[1] = width, info[2] = height
 
    public:
-    inline Texture() = default;
+    Texture() = default;
 
-    inline Texture(const Texture& t);
-    inline Texture(Texture&& t) noexcept;
-    inline Texture(const char* path);
+    Texture(const Texture& t);
+    Texture(Texture&& t) noexcept;
+    Texture(const char* path);
     Texture(SDL_Texture* texture);
-    inline Texture& operator=(const Texture& t);
+    Texture& operator=(const Texture& t);
 
-    inline void Load(const char* path);
+    void Load(const char* path);
 
-    inline void Render(const SDL_FRect* dst_rect, const SDL_Rect* src_rect = NULL) const;
+    void Render(const SDL_FRect* dst_rect, const SDL_Rect* src_rect = NULL) const;
 
-    inline void Render(const SDL_FRect* dst_rect, const float angle, const SDL_FPoint* center = NULL,
-                       const SDL_Rect* src_rect = NULL) const;
+    void Render(const SDL_FRect* dst_rect, const float angle, const SDL_FPoint* center = NULL,
+                const SDL_Rect* src_rect = NULL) const;
 
-    inline int GetHeight() const;
+    inline int GetHeight() const { return info[2]; }
 
-    inline int GetWidth() const;
+    inline int GetWidth() const { return info[1]; }
     ~Texture();
 };
 

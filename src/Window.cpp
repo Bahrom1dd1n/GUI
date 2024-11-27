@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include <iostream>
+
 Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
                const SDL_Color& background_cl, uint32_t max_fps) {
     this->window_width = window_width;
@@ -74,10 +76,6 @@ void Window::Start() {
     }
 };
 
-bool Window::IsRunning() const {
-    return this->running;
-}
-
 void Window::Stop() {
     this->running = false;
 }
@@ -128,12 +126,12 @@ void Window::OnMouseMove(int x, int y) {
     }
 }
 
-inline void Window::OnTyped(char letter) {
+void Window::OnTyped(char letter) {
     if (!this->focused_element) return;
     this->focused_element->OnTyped(letter);
     this->focused_element->Type(letter);
 }
-inline void Window::OnKeyDown(uint32_t key) {
+void Window::OnKeyDown(uint32_t key) {
     if (!this->focused_element) return;
     this->focused_element->OnKeyPressed(key);
     this->focused_element->KeyPress(key);

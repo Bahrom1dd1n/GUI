@@ -22,7 +22,7 @@ Button::Button(Window* win, int x, int y, int width, int height, const std::stri
     this->name_text.SetX(x + (((this->rect.x - this->name_text.GetWidth()) >> 1)));
     this->name_text.SetY(y + (((this->rect.y - this->name_text.GetHeight()) >> 1)));
     this->col = color;
-    this->ren = win->main_ren;
+    this->renderer = win->main_ren;
 };
 void Button::SetPosition(int x, int y) {
     this->rect.x = x;
@@ -31,6 +31,6 @@ void Button::SetPosition(int x, int y) {
     this->name_text.SetY(y + (((this->rect.y - this->name_text.GetHeight()) >> 1)));
 }
 void Button::Draw() {
-    SDL_SetRenderDrawColor(ren, col.r, col.g, col.b, col.a);
-    SDL_RenderFillRect(ren, &rect);
+    SDL_SetRenderDrawColor(this->renderer, col.r, col.g, col.b, col.a);
+    SDL_RenderFillRect(this->renderer, &rect);
 };

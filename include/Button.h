@@ -20,11 +20,13 @@ class Button : public Element {
     Text name_text;
     SDL_Rect rect;
     SDL_Color col;
-    SDL_Renderer* ren;
 
    public:
+    Button() {};
     Button(Window* win, int x, int y, int width, int height, const std::string& name, const Font& font,
            const SDL_Color& color);
+    void Init(Window* win, int x, int y, int width, int height, const std::string& name, const Font& font,
+              const SDL_Color& color);
     void SetPosition(int x, int y);
     void Draw() override;
     void Click() override;
@@ -34,7 +36,7 @@ class Button : public Element {
     void UnHover() override;
     void KeyPress(uint32_t key) override;
     void Type(char) override;
-    inline bool ContainPoint(int x, int y) override;
+    bool ContainPoint(int x, int y) override;
     inline const std::string& GetName() const { return this->name_text.GetText(); };
 };
 

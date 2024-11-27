@@ -26,7 +26,7 @@ class MyWin : public Window {
    public:
     MyWin(int x, int y, int width, int height, const std::string& title, const SDL_Color& col)
         : Window(x, y, width, height, "My Window", {255, 255, 255}),
-          txt(this, 20, 20, "This is Text", Font("./font2.ttf", 16, {0, 0, 0, 255})),
+          txt(this, 20, 20, "This is Text", Font("./Font2.ttf", 16, {0, 0, 0, 255})),
           but(this, 100, 100, 50, 20, "Button", Font("./Font2.ttf", 16, {0, 0, 0, 255}), {0, 255, 100, 255})
 
     {

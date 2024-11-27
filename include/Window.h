@@ -39,7 +39,7 @@ class Window {
     Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
            const SDL_Color& background_cl, uint32_t max_fps = 0);
 
-    bool IsRunning() const;
+    inline bool IsRunning() const { return this->running; };
     void Start();
     void Stop();
     void Add(Element* elem);
@@ -47,6 +47,7 @@ class Window {
 
     friend class Button;
     friend class Text;
+    friend class Font;
 };
 
 #endif  //!__WINDOW__

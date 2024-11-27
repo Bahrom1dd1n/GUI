@@ -3,11 +3,14 @@
 #define __FONT__
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "Texture.h"
 
@@ -15,21 +18,29 @@ class Font {
    private:
     struct FontData {
         SDL_Texture* letters[96] = {nullptr};
+        TTF_Font* _font = nullptr;
         uint16_t letter_width[96] = {0};
         uint16_t letter_height = 0;
         uint16_t link_count = 0;
     };
     FontData* font_info = nullptr;
     static bool ttf_init;
+    uint32_t DrawText(SDL_Renderer* rend, int x, int y, const char* text, size_t length,
+                      const SDL_Color& color = {0, 0, 0, 255});
+
+    Texture ConvertToTextuer(SDL_Renderer* ren, const std::string& text, const SDL_Color& color = {0, 0, 0, 255});
+    void LoadFontTextures(SDL_Renderer* ren);
 
    public:
+    Font() = default;
     Font(const Font& t);
 
     Font(Font&& _font) noexcept;
 
-    Font(const char* font_path, size_t font_size, const SDL_Color& font_color);
-
     Font& operator=(const Font& _font);
+    Font(const char* font_path, size_t font_size, const SDL_Color& font_color);
+    void Init(const char* font_path, size_t font_size, const SDL_Color& font_color);
+
     // retunr height of font
     inline uint32_t GetLetterHeight() const { return this->font_info->letter_height; };
     // retunr width of texture of given letter
@@ -38,22 +49,11 @@ class Font {
         return this->font_info->letter_width[letter - 32];
     };
 
-    // DrawText return width of Drawn text
-    size_t DrawText(int x, int y, const char* text, size_t length) const;
-    /*
-     size_t RenderTextUntil(int x, int y, const char* text, char delim, size_t max_length) {
-         SDL_Rect rect = {x, y, 0, letter_height};
-         for (size_t i = 0; i < max_length && text[i] != delim; i++) {
-             rect.w = letter_width[text[i]];
-             SDL_RenderCopy(main_ren, letters[text[i]], NULL, &rect);
-             rect.x += rect.w;
-         }
-         return rect.x - x;
-     }
-     */
-
-    Texture ConvertToTextuer(const char* text, size_t length) const;
+    // DrawText return width of Drawn text , if win is specified it draw text to that window
+    // unless it will draw it to it's parent window
     ~Font();
+    friend class Button;
+    friend class Text;
 };
 
 #endif  //! __FONT__
