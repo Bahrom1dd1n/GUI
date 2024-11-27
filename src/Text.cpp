@@ -1,8 +1,10 @@
 #include "Text.h"
 
+#include <SDL2/SDL_pixels.h>
+
 #include "Font.h"
 #include "Window.h"
-Text::Text(Window* win, int x, int y, const std::string& text, const Font& font) : text(text) {
+Text::Text(Window* win, int x, int y, const std::string& text, const Font& font, const SDL_Color& color) : text(text) {
     new (&this->font) Font(font);
     new (&this->text_texture) Texture(this->font.ConvertToTextuer(win->main_ren, text));
     this->rect.x = x;
@@ -12,7 +14,7 @@ Text::Text(Window* win, int x, int y, const std::string& text, const Font& font)
     this->renderer = win->main_ren;
 }
 
-void Text::Init(Window* win, int x, int y, const std::string& text, const Font& font) {
+void Text::Init(Window* win, int x, int y, const std::string& text, const Font& font, const SDL_Color& color) {
     this->text = text;
     this->~Text();
     new (&this->font) Font(font);

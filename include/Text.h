@@ -7,6 +7,7 @@
 #define __TEXT__
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 
@@ -26,8 +27,9 @@ class Text : public Element {
 
    public:
     Text() = default;
-    Text(Window* win, int x, int y, const std::string& text, const Font& font);
-    void Init(Window* win, int x, int y, const std::string& text, const Font& font);
+    Text(Window* win, int x, int y, const std::string& text, const Font& font, const SDL_Color& color = {0, 0, 0, 255});
+    void Init(Window* win, int x, int y, const std::string& text, const Font& font,
+              const SDL_Color& color = {0, 0, 0, 255});
 
     void SetX(int x);
     void SetY(int y);

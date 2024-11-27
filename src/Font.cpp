@@ -68,6 +68,8 @@ void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_c
 
 // DrawText return width of Drawn text
 uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_t length, const SDL_Color& color) {
+    if (!this->font_info) this->LoadFontTextures(ren);
+
     SDL_Rect rect = {x, y, 0, this->font_info->letter_height};
     for (size_t i = 0; i < length; i++) {
         rect.x += rect.w;
@@ -78,13 +80,13 @@ uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_
         rect.w = font_info->letter_width[index];
         SDL_Texture* letter_texture = font_info->letters[index];
         SDL_SetTextureColorMod(letter_texture, color.r, color.g, color.b);
-        SDL_RenderCopy(main_ren, letter_texture, NULL, &rect);
+        SDL_RenderCopy(ren, letter_texture, NULL, &rect);
     }
 
     return rect.x - x + rect.w;
 }
 
-Texture Font::ConvertToTextuer(SDL_Renderer* ren, const std::string& text, const SDL_Color& color) {
+Image Font::ConvertToImage(SDL_Renderer* ren, const std::string& text, const SDL_Color& color) {
     if (!this->font_info) this->LoadFontTextures(ren);
     SDL_Surface* surf = TTF_RenderText_Blended(this->font_info->_font, text.c_str(), color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surf);

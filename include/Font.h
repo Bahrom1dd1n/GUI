@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <string>
 
-#include "Texture.h"
+#include "Image.h"
 
 class Font {
    private:
@@ -28,7 +28,7 @@ class Font {
     uint32_t DrawText(SDL_Renderer* rend, int x, int y, const char* text, size_t length,
                       const SDL_Color& color = {0, 0, 0, 255});
 
-    Texture ConvertToTextuer(SDL_Renderer* ren, const std::string& text, const SDL_Color& color = {0, 0, 0, 255});
+    Image ConvertToImage(SDL_Renderer* ren, const std::string& text, const SDL_Color& color = {0, 0, 0, 255});
     void LoadFontTextures(SDL_Renderer* ren);
 
    public:
