@@ -48,6 +48,7 @@ class Window {
     friend class Button;
     friend class Text;
     friend class Font;
+    friend class Image;
 };
 
 #endif  //!__WINDOW__

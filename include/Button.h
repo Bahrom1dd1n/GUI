@@ -23,9 +23,9 @@ class Button : public Element {
 
    public:
     Button() {};
-    Button(Window* win, int x, int y, int width, int height, const std::string& name, const Font& font,
+    Button(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
            const SDL_Color& color);
-    void Init(Window* win, int x, int y, int width, int height, const std::string& name, const Font& font,
+    void Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
               const SDL_Color& color);
     void SetPosition(int x, int y);
     void Draw() override;

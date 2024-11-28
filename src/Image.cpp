@@ -1,10 +1,18 @@
+
 #include "Image.h"
 
+#include <SDL2/SDL_rect.h>
+
+#include <cmath>
 #include <cstddef>
 #include <iostream>
-Image::Image(SDL_Texture* _texture) {
-    this->rect.x = 0;
-    this->rect.y = 0;
+
+#include "Window.h"
+
+Image::Image(int x, int y, SDL_Renderer* ren, SDL_Texture* _texture) {
+    this->rect.x = x;
+    this->rect.y = y;
+    this->renderer = ren;
     SDL_QueryTexture(_texture, NULL, NULL, &rect.w, &rect.h);
     this->img_info = new ImageInfo{_texture, 1};
 }
@@ -12,25 +20,28 @@ Image::Image(SDL_Texture* _texture) {
 Image::Image(const Image& t) {
     if (!t.img_info) return;
     this->img_info = t.img_info;
+    this->renderer = t.renderer;
     this->img_info->link_count++;  // another Image created on top of SDL_Texture* so ,
                                    // number of Images using same SDL_Texture increments by 1
 }
 Image::Image(Image&& t) noexcept {
     if (!t.img_info) return;
     this->img_info = t.img_info;
+    this->renderer = t.renderer;
     delete t.img_info;
     t.img_info = nullptr;
 }
 
-Image::Image(const char* path) {
+Image::Image(Window* win, int x, int y, const char* path) {
+    this->renderer = win->main_ren;
     SDL_Texture* temp = IMG_LoadTexture(this->renderer, path);
     if (!temp) {
         std::cerr << "Couldn't load texture\n" << std::endl;
         exit(1);
     }
     printf("Image Succesfully loaded\n");
-    this->rect.x = 0;
-    this->rect.y = 0;
+    this->rect.x = x;
+    this->rect.y = y;
     SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
     this->img_info = new ImageInfo{temp, 1};
 }
@@ -41,13 +52,23 @@ Image& Image::operator=(const Image& t) {
     }
     if (t.img_info) {
         this->img_info = t.img_info;
+        this->renderer = t.renderer;
         this->rect = t.rect;
         this->img_info->link_count++;
     }
     return *this;
 }
 
-void Image::Load(const char* path) {
+void Image::Init(Window* win, int x, int y, const char* path) {
+    this->renderer = win->main_ren;
+    this->Load(path);
+    this->rect.x = x;
+    this->rect.y = y;
+}
+
+void Image::Load(const char* path, Window* win) {
+    if (win) this->renderer = renderer;
+    if (!this->renderer) return;
     SDL_Texture* temp = IMG_LoadTexture(this->renderer, path);
     if (!temp) {
         std::cerr << " image with name " << path << " not found" << std::endl;
@@ -58,9 +79,10 @@ void Image::Load(const char* path) {
     this->rect.y = 0;
     SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
     this->img_info = new ImageInfo{temp, 1};
+    this->renderer = win->main_ren;
 }
 
-void Image::Draw(const SDL_Rect* src_rect) const {
+inline void Image::DrawPart(const SDL_Rect* src_rect) const {
     if (!this->img_info) return;
     if (this->angle) {
         SDL_RenderCopyEx(this->renderer, this->img_info->texture, src_rect, &this->rect, this->angle, NULL,
@@ -81,3 +103,49 @@ Image::~Image() {
         this->img_info->link_count--;
     }
 }
+
+void Image::Draw() {
+    this->DrawPart(NULL);
+};
+// return true if this element contains point of given coordinates
+bool Image::ContainPoint(int x, int y) {
+    if (this->angle) {
+        x = (x - rect.x) * cos_a;
+        y = (y - rect.y) * sin_a;
+
+        if (x > rect.w || x < 0) return false;
+        if (y > rect.h || y < 0) return false;
+        return true;
+    }
+    if (x < this->rect.x || x > this->rect.x + this->rect.w) return false;
+    if (y < this->rect.y || y > this->rect.y + this->rect.h) return false;
+    return true;
+};
+// behavior of gui elemnt when it's been pressed
+void Click() {
+
+};
+// focuse to current gui element (when mouse clicked on it or some specific event is happened)
+void Focuse() {
+
+};
+// unfocuses gui element
+void Unfocuse() {
+
+};
+// behavior of gui element when when specific key is pressed
+void KeyPress(uint32_t key) {
+
+};
+// behavior of gui element when when typed
+void Type(char) {
+
+};
+// behavior of gui element when mouse enters area of gui element
+void Hover() {
+
+};
+// behavior of gui element when mouse goes out of it's area
+void UnHover() {
+
+};

@@ -3,55 +3,22 @@
 #include <SDL2/SDL_pixels.h>
 
 #include "Font.h"
+#include "Image.h"
 #include "Window.h"
-Text::Text(Window* win, int x, int y, const std::string& text, const Font& font, const SDL_Color& color) : text(text) {
-    new (&this->font) Font(font);
-    new (&this->text_texture) Texture(this->font.ConvertToTextuer(win->main_ren, text));
+Text::Text(Window* win, int x, int y, const std::string& text, Font& font, const SDL_Color& color)
+    : Image(font.ConvertToImage(this->renderer, text)), text(text), font(font) {
     this->rect.x = x;
     this->rect.y = y;
     this->rect.h = font.GetLetterHeight();
-    this->rect.w = this->text_texture.GetWidth();
     this->renderer = win->main_ren;
 }
 
-void Text::Init(Window* win, int x, int y, const std::string& text, const Font& font, const SDL_Color& color) {
+void Text::Init(Window* win, int x, int y, const std::string& text, Font& font, const SDL_Color& color) {
+    this->renderer = win->main_ren;
+    this->font = font;
+    Image::operator=(font.ConvertToImage(this->renderer, text));
     this->text = text;
     this->~Text();
-    new (&this->font) Font(font);
-    new (&this->text_texture) Texture(this->font.ConvertToTextuer(win->main_ren, text));
     this->rect.x = x;
     this->rect.y = y;
-    this->rect.h = font.GetLetterHeight();
-    this->rect.w = this->text_texture.GetWidth();
-    this->renderer = win->main_ren;
-}
-void Text::Draw() {
-    this->text_texture.Render(&this->rect);
-};
-
-void Text::SetX(int x) {
-    this->rect.x = x;
-}
-void Text::SetY(int y) {
-    this->rect.y = y;
-}
-void Text::SetPosition(int x, int y) {
-    this->rect.x = x;
-    this->rect.y = y;
-}
-// overiding virtual functinos of bstract class Element
-void Text::Click() {};
-void Text::Focuse() {};
-void Text::Unfocuse() {};
-void Text::Hover() {};
-void Text::UnHover() {};
-void Text::KeyPress(uint32_t key) {};
-void Text::Type(char) {};
-bool Text::ContainPoint(int x, int y) {
-    if (x < this->rect.x || x > this->rect.x + this->rect.w) return false;
-    if (y < this->rect.y || y > this->rect.y + this->rect.h) return false;
-    return true;
-};
-
-Text::~Text() {
 }
