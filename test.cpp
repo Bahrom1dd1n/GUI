@@ -18,18 +18,18 @@ const int windowHeight = 600;
 
 class MyWin : public Window {
    private:
-    Font font = Font("./Font2.ttf", 14, {0, 0, 0, 255});
-    Button but = Button(this, 10, 10, 100, 30, "Button", font, {10, 200, 10});
-    Text txt = Text(this, 10, 60, "Hello", font);
+    Font font;
+    Button but;
+    Text txt;
 
    public:
     MyWin(int x, int y, int width, int height, const std::string& title, const SDL_Color& col)
         : Window(x, y, width, height, "My Window", col)
 
     {
-        //  new (&but)Button(this, 100, 100, 50, 20, "Button", Font("./Font2.ttf", 16, {0, 0, 0, 255}), {0, 255, 100,
-        //  255});
-
+        this->font.Init("./Font2.ttf", 14, {10, 10, 10, 255});
+        this->txt.Init(this, 10, 60, "Hello", font);
+        this->but.Init(this, 10, 10, 100, 30, "Button", font, {10, 200, 10, 255});
         this->Add(&txt);
         this->Add(&but);
     }

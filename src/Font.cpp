@@ -6,9 +6,11 @@
 #include <SDL2/SDL_ttf.h>
 
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 
-#include "Texture.h"
+#include "Image.h"
 
 bool Font::ttf_init = false;
 
@@ -48,22 +50,34 @@ Font& Font::operator=(const Font& _font) {
 }
 
 Font::Font(const char* font_path, size_t font_size, const SDL_Color& font_color) {
-    this->font_info = new FontData;
     if (!ttf_init) {
         TTF_Init();
         ttf_init = true;
     }
     TTF_Font* font = TTF_OpenFont(font_path, font_size);
+    if (!font) {
+        printf("Cannot load font!\n");
+        exit(1);
+    }
+    this->font_info = new FontData;
+    this->font_info->_font = font;
+    this->font_info->link_count = 1;
 }
 
 void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_color) {
     this->~Font();
-    this->font_info = new FontData;
     if (!ttf_init) {
         TTF_Init();
         ttf_init = true;
     }
     TTF_Font* font = TTF_OpenFont(font_path, font_size);
+    if (!font) {
+        printf("Cannot load font!\n");
+        exit(1);
+    }
+    this->font_info = new FontData;
+    this->font_info->_font = font;
+    this->font_info->link_count = 1;
 }
 
 // DrawText return width of Drawn text
@@ -87,20 +101,15 @@ uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_
 }
 
 Image Font::ConvertToImage(SDL_Renderer* ren, const std::string& text, const SDL_Color& color) {
-    if (!this->font_info) this->LoadFontTextures(ren);
+    if (this->font_info->letters[0] == nullptr) this->LoadFontTextures(ren);
     SDL_Surface* surf = TTF_RenderText_Blended(this->font_info->_font, text.c_str(), color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surf);
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(surf);
-    return Texture(texture);
+    return Image(0, 0, ren, texture);
 }
 void Font::LoadFontTextures(SDL_Renderer* ren) {
-    if (this->font_info) {
-        this->~Font();
-    }
-
-    this->font_info = new FontData;
-
+    if (!this->font_info) return;
     SDL_Color color = {255, 255, 255, 255};
     TTF_Font* font = this->font_info->_font;
     for (int i = 32; i < 127; i++) {
@@ -124,8 +133,7 @@ Font::~Font() {
         return;
     }
     // if this is last holder of data then release data
-    for (size_t i = sizeof(this->font_info->letters) - 1; i > -1; i--) SDL_DestroyTexture(this->font_info->letters[i]);
-    delete this->font_info;
+    for (size_t i = this->font_info->num_letters - 1; i > -1; i--) SDL_DestroyTexture(this->font_info->letters[i]);
     TTF_CloseFont(this->font_info->_font);
     delete this->font_info;
 }

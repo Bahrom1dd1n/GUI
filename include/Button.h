@@ -20,6 +20,7 @@ class Button : public Element {
     Text name_text;
     SDL_Rect rect;
     SDL_Color col;
+    uint8_t clicked = 0;
 
    public:
     Button() {};

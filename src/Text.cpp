@@ -18,7 +18,8 @@ void Text::Init(Window* win, int x, int y, const std::string& text, Font& font, 
     this->font = font;
     Image::operator=(font.ConvertToImage(this->renderer, text));
     this->text = text;
-    this->~Text();
     this->rect.x = x;
     this->rect.y = y;
+}
+Text::~Text() {
 }

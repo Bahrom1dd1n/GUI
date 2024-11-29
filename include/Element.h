@@ -8,10 +8,10 @@ class Element {
     SDL_Renderer* renderer = nullptr;
 
    public:
-    void (*OnClick)();
-    void (*OnTyped)(char);
-    void (*OnKeyPressed)(uint32_t key);
-    void (*OnHovered)();
+    void (*OnClick)() = nullptr;
+    void (*OnTyped)(char) = nullptr;
+    void (*OnKeyPressed)(uint32_t key) = nullptr;
+    void (*OnHovered)() = nullptr;
     // drawing gui element on to the parent window
     virtual void Draw() = 0;
     // return true if this element contains point of given coordinates

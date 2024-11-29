@@ -73,6 +73,7 @@ class Image : public Element {
     void UnHover() override;
 
     ~Image();
+    friend class Font;
 };
 
 #endif  // !__IMAGE__

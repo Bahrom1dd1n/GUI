@@ -90,7 +90,7 @@ void Window::OnMouseDown(int x, int y) {
                 (*it)->Focuse();
             }
             (*it)->Click();
-            (*it)->OnClick();
+            if ((*it)->OnClick) (*it)->OnClick();
             break;
         }
         it++;
@@ -115,7 +115,7 @@ void Window::OnMouseMove(int x, int y) {
                 this->hovered_element = *it;
                 (*it)->Hover();
             }
-            (*it)->OnHovered();
+            if ((*it)->OnHovered) (*it)->OnHovered();
             break;
         }
         it++;
@@ -128,12 +128,12 @@ void Window::OnMouseMove(int x, int y) {
 
 void Window::OnTyped(char letter) {
     if (!this->focused_element) return;
-    this->focused_element->OnTyped(letter);
+    if (this->focused_element->OnTyped) this->focused_element->OnTyped(letter);
     this->focused_element->Type(letter);
 }
 void Window::OnKeyDown(uint32_t key) {
     if (!this->focused_element) return;
-    this->focused_element->OnKeyPressed(key);
+    if (this->focused_element->OnKeyPressed) this->focused_element->OnKeyPressed(key);
     this->focused_element->KeyPress(key);
 }
 

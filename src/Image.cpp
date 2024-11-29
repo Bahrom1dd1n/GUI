@@ -122,30 +122,30 @@ bool Image::ContainPoint(int x, int y) {
     return true;
 };
 // behavior of gui elemnt when it's been pressed
-void Click() {
+void Image::Click() {
 
 };
 // focuse to current gui element (when mouse clicked on it or some specific event is happened)
-void Focuse() {
+void Image::Focuse() {
 
 };
 // unfocuses gui element
-void Unfocuse() {
+void Image::Unfocuse() {
 
 };
 // behavior of gui element when when specific key is pressed
-void KeyPress(uint32_t key) {
+void Image::KeyPress(uint32_t key) {
 
 };
 // behavior of gui element when when typed
-void Type(char) {
+void Image::Type(char) {
 
 };
 // behavior of gui element when mouse enters area of gui element
-void Hover() {
+void Image::Hover() {
 
 };
 // behavior of gui element when mouse goes out of it's area
-void UnHover() {
+void Image::UnHover() {
 
 };

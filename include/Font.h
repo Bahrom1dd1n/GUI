@@ -17,9 +17,10 @@
 class Font {
    private:
     struct FontData {
-        SDL_Texture* letters[96] = {nullptr};
+        static const short num_letters = 96;
+        SDL_Texture* letters[num_letters] = {nullptr};
         TTF_Font* _font = nullptr;
-        uint16_t letter_width[96] = {0};
+        uint16_t letter_width[num_letters] = {0};
         uint16_t letter_height = 0;
         uint16_t link_count = 0;
     };
