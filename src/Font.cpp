@@ -82,7 +82,7 @@ void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_c
 
 // DrawText return width of Drawn text
 uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_t length, const SDL_Color& color) {
-    if (!this->font_info) this->LoadFontTextures(ren);
+    if (this->font_info->letters[0] == nullptr) this->LoadFontTextures(ren);
 
     SDL_Rect rect = {x, y, 0, this->font_info->letter_height};
     for (size_t i = 0; i < length; i++) {

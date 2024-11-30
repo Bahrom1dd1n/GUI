@@ -48,7 +48,7 @@ void Window::Start() {
                     break;
 
                 case SDL_KEYDOWN:
-                    OnKeyDown(event.button.button);
+                    OnKeyDown(event.key.keysym.sym);
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:

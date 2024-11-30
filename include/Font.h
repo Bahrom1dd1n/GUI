@@ -54,6 +54,7 @@ class Font {
     // unless it will draw it to it's parent window
     ~Font();
     friend class Button;
+    friend class TextField;
     friend class Text;
 };
 

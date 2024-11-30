@@ -2,10 +2,13 @@
 #include "Image.h"
 
 #include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <ostream>
 
 #include "Window.h"
 
@@ -13,8 +16,9 @@ Image::Image(int x, int y, SDL_Renderer* ren, SDL_Texture* _texture) {
     this->rect.x = x;
     this->rect.y = y;
     this->renderer = ren;
+    if (!_texture) return;  // if no texture is provided exit
     SDL_QueryTexture(_texture, NULL, NULL, &rect.w, &rect.h);
-    this->img_info = new ImageInfo{_texture, 1};
+    this->img_info = new ImageInfo{_texture, 1, (uint32_t)rect.w, (uint32_t)rect.h};
 }
 
 Image::Image(const Image& t) {
@@ -43,7 +47,7 @@ Image::Image(Window* win, int x, int y, const char* path) {
     this->rect.x = x;
     this->rect.y = y;
     SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
-    this->img_info = new ImageInfo{temp, 1};
+    this->img_info = new ImageInfo{temp, 1, (uint32_t)rect.w, (uint32_t)rect.h};
 }
 
 Image& Image::operator=(const Image& t) {
@@ -67,19 +71,22 @@ void Image::Init(Window* win, int x, int y, const char* path) {
 }
 
 void Image::Load(const char* path, Window* win) {
-    if (win) this->renderer = renderer;
-    if (!this->renderer) return;
-    SDL_Texture* temp = IMG_LoadTexture(this->renderer, path);
-    if (!temp) {
-        std::cerr << " image with name " << path << " not found" << std::endl;
-        exit(1);
+    try {
+        if (win) this->renderer = renderer;
+        if (!this->renderer) return;
+        SDL_Texture* temp = IMG_LoadTexture(this->renderer, path);
+        if (!temp) {
+            std::cerr << " image with name " << path << " not found" << std::endl;
+            exit(1);
+        }
+        this->~Image();
+        this->rect.x = 0;
+        this->rect.y = 0;
+        SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
+        this->img_info = new ImageInfo{temp, 1, (uint32_t)rect.w, (uint32_t)rect.h};
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
-    this->~Image();
-    this->rect.x = 0;
-    this->rect.y = 0;
-    SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
-    this->img_info = new ImageInfo{temp, 1};
-    this->renderer = win->main_ren;
 }
 
 inline void Image::DrawPart(const SDL_Rect* src_rect) const {

@@ -16,6 +16,8 @@ class Image : public Element {
     struct ImageInfo {
         SDL_Texture* texture = nullptr;
         uint32_t link_count = 0;
+        uint32_t original_width = 0;
+        uint32_t original_height = 0;
     };
     SDL_Rect rect = {0, 0, 0, 0};
     ImageInfo* img_info = nullptr;  // information about texture, SDL_Texture , how many references to it
@@ -32,6 +34,10 @@ class Image : public Element {
     Image& operator=(const Image& t);
     void Init(Window* win, int x, int y, const char* path);
     void Load(const char* path, Window* win = nullptr);
+    void Scale(double ratio) {
+        this->rect.w = this->img_info->original_width * ratio;
+        this->rect.h = this->img_info->original_height * ratio;
+    }
 
     void DrawPart(const SDL_Rect* src_rect = NULL) const;
 
