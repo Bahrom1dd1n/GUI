@@ -123,6 +123,3 @@ void TextField::Type(char letter) {
     this->cursor_blink = 1;
 };
 // behavior of gui element when mouse enters area of gui element
-void TextField::Hover() {};
-// behavior of gui element when mouse goes out of it's area
-void TextField::UnHover() {};

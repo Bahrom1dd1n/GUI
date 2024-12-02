@@ -3,15 +3,17 @@
 #include <SDL2/SDL_render.h>
 
 #include <cstdint>
+#include <functional>
 class Element {
    protected:
     SDL_Renderer* renderer = nullptr;
+    bool visible = true;
 
    public:
-    void (*OnClick)() = nullptr;
-    void (*OnTyped)(char) = nullptr;
-    void (*OnKeyPressed)(uint32_t key) = nullptr;
-    void (*OnHovered)() = nullptr;
+    std::function<void(int x, int y)> click_callback;
+    std::function<void(uint32_t key)> keypress_callback;
+    inline bool IsVisible() const { return this->visible; };
+    inline void SetVisible(bool visible) { this->visible = visible; };
     // drawing gui element on to the parent window
     virtual void Draw() = 0;
     // return true if this element contains point of given coordinates
@@ -27,8 +29,5 @@ class Element {
     // behavior of gui element when when typed
     virtual void Type(char) = 0;
     // behavior of gui element when mouse enters area of gui element
-    virtual void Hover() = 0;
-    // behavior of gui element when mouse goes out of it's area
-    virtual void UnHover() = 0;
 };
 #endif  // !__SHARED_TEXTRE__

@@ -149,10 +149,3 @@ void Image::Type(char) {
 
 };
 // behavior of gui element when mouse enters area of gui element
-void Image::Hover() {
-
-};
-// behavior of gui element when mouse goes out of it's area
-void Image::UnHover() {
-
-};

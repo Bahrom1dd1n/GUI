@@ -33,8 +33,6 @@ class Button : public Element {
     void Click() override;
     void Focuse() override;
     void Unfocuse() override;
-    void Hover() override;
-    void UnHover() override;
     void KeyPress(uint32_t key) override;
     void Type(char) override;
     bool ContainPoint(int x, int y) override;

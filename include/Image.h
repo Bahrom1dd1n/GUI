@@ -74,10 +74,6 @@ class Image : public Element {
     // behavior of gui element when when typed
     void Type(char) override;
     // behavior of gui element when mouse enters area of gui element
-    void Hover() override;
-    // behavior of gui element when mouse goes out of it's area
-    void UnHover() override;
-
     ~Image();
     friend class Font;
 };

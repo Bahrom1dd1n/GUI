@@ -55,15 +55,14 @@ void Window::Start() {
                     this->OnMouseDown(event.button.x, event.button.y);
                     break;
 
-                case SDL_MOUSEMOTION:
-                    this->OnMouseMove(event.button.x, event.button.y);
+                    // case SDL_MOUSEMOTION:this->OnMouseMove(event.button.x, event.button.y);
             }
         }
         SDL_SetRenderDrawColor(main_ren, bg_cl.r, bg_cl.g, bg_cl.b, 255);
         SDL_RenderClear(main_ren);
 
         for (int i = 0; i < this->elements.size(); i++) {
-            elements[i]->Draw();
+            if (elements[i]->IsVisible()) elements[i]->Draw();
         }
 
         SDL_RenderPresent(main_ren);
@@ -90,7 +89,7 @@ void Window::OnMouseDown(int x, int y) {
                 (*it)->Focuse();
             }
             (*it)->Click();
-            if ((*it)->OnClick) (*it)->OnClick();
+            if ((*it)->click_callback) (*it)->click_callback(x, y);
             break;
         }
         it++;
@@ -101,7 +100,7 @@ void Window::OnMouseDown(int x, int y) {
     }
 }
 
-void Window::OnMouseMove(int x, int y) {
+/*void Window::OnMouseMove(int x, int y) {
     static uint64_t last_moved = 0;
     if (current_time - last_moved < _MOUSE_MOVE_DELAY) return;
 
@@ -124,16 +123,15 @@ void Window::OnMouseMove(int x, int y) {
         this->hovered_element->UnHover();
         this->hovered_element = nullptr;
     }
-}
+}*/
 
 void Window::OnTyped(char letter) {
     if (!this->focused_element) return;
-    if (this->focused_element->OnTyped) this->focused_element->OnTyped(letter);
     this->focused_element->Type(letter);
 }
 void Window::OnKeyDown(uint32_t key) {
     if (!this->focused_element) return;
-    if (this->focused_element->OnKeyPressed) this->focused_element->OnKeyPressed(key);
+    if (focused_element->keypress_callback) this->focused_element->keypress_callback(key);
     this->focused_element->KeyPress(key);
 }
 

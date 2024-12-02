@@ -9,8 +9,6 @@ void Button::Click() {
 };
 void Button::Focuse() {};
 void Button::Unfocuse() {};
-void Button::Hover() {};
-void Button::UnHover() {};
 void Button::KeyPress(uint32_t key) {};
 
 void Button::Type(char) {};

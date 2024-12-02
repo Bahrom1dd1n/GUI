@@ -35,7 +35,9 @@ class TextField : public Element {
     TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
 
     void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
+    inline const std::string& GetText() const { return this->text; }
     void Draw() override;
+
     // return true if this element contains point of given coordinates
     bool ContainPoint(int x, int y) override;
     // behavior of gui elemnt when it's been pressed
@@ -49,9 +51,6 @@ class TextField : public Element {
     // behavior of gui element when when typed
     void Type(char) override;
     // behavior of gui element when mouse enters area of gui element
-    void Hover() override;
-    // behavior of gui element when mouse goes out of it's area
-    void UnHover() override;
 };
 
 #endif  //!__TEXT_FIELD__
