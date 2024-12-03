@@ -8,6 +8,7 @@
 #include <SDL2/SDL_render.h>
 
 #include <cstdint>
+#include <functional>
 #include <string>
 
 #include "Element.h"
@@ -30,6 +31,8 @@ class TextField : public Element {
     static const uint8_t padding = 4;
 
    public:
+    std::function<void(int x, int y)> mouse_down_callback;
+    std::function<void(uint32_t key)> key_down_callback;
     TextField() = default;
 
     TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});

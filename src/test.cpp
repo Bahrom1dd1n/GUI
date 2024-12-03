@@ -44,7 +44,7 @@ class MyWin : public Window {
         this->Add(&field);
         this->Add(&img);
     }
-    void Print() { std::cout << "text = " << this->field.GetText(); }
+    void Print() { std::cout << "text = " << this->field.GetText() << std::endl; }
 };
 int main(int argc, char* args[]) {
     SDL_Color col{255, 255, 255, 255};

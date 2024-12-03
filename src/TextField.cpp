@@ -53,17 +53,25 @@ bool TextField::ContainPoint(int x, int y) {
 };
 // behavior of gui elemnt when it's been pressed
 void TextField::MouseDown(const Event& event) {
-    if (!this->ContainPoint(event.button.x, event.button.y)) return;
-    int m_dis = event.button.x - this->rect.x;
-    cursor_x = padding;
+    int m_dis = event.button.x - this->rect.x - padding;
+    cursor_blink = 1;
+    cursor_x = 0;
     cursor_index = start;
-    int i = start;
 
-    while (cursor_x < m_dis && cursor_index < text.size()) {
-        cursor_x += this->font.GetLetterWidth(this->text[i]);
-        i++;
-        cursor_index++;
+    if (m_dis > 0 && text.size()) {
+        int i = 0;
+        while (cursor_x < m_dis && i < text.size() && i < this->max_length) {
+            cursor_x += this->font.GetLetterWidth(this->text[cursor_index]);
+            i++;
+            cursor_index++;
+        }
+        int width = font.GetLetterWidth(this->text[cursor_index]);
+        if ((cursor_x - m_dis) * 2 > width) {
+            cursor_x -= width;
+            cursor_index--;
+        }
     }
+    if (mouse_down_callback) mouse_down_callback(event.button.x, event.button.y);
 };
 // focuse to current gui element (when mouse clicked on it or some specific event is happened)
 void TextField::Focuse() {
@@ -82,7 +90,10 @@ void TextField::Unfocuse() {
 // behavior of gui element when when specific key is pressed
 void TextField::KeyDown(const Event& event) {
     char letter = event.text.text[0];
-    if (31 < letter && 127 > letter) this->Type(letter);
+    if (31 < letter && 127 > letter) {
+        this->Type(letter);
+        return;
+    };
     switch (event.key.keysym.sym) {
         case SDLK_BACKSPACE:
             cursor_blink = 1;
@@ -126,6 +137,7 @@ void TextField::KeyDown(const Event& event) {
             }
             break;
     };
+    if (key_down_callback) key_down_callback(event.key.keysym.sym);
 };
 // behavior of gui element when when typed
 void TextField::Type(char letter) {

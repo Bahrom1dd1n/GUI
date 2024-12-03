@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_events.h>
 
+#include <cstdio>
 #include <iostream>
 
 Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
@@ -44,6 +45,9 @@ void Window::Start() {
                 case SDL_QUIT:
                     running = false;
                     break;
+                case SDL_TEXTINPUT:
+                    this->OnKeyDown(event);
+                    break;
 
                 case SDL_KEYDOWN:
                     this->OnKeyDown(event);
@@ -52,7 +56,6 @@ void Window::Start() {
                 case SDL_MOUSEBUTTONDOWN:
                     this->OnMouseDown(event);
                     break;
-                    // case SDL_TEXTINPUT: OnTyped(event.text.text[0]);break;
                     // case SDL_MOUSEMOTION:this->OnMouseMove(event.button.x, event.button.y);
             }
         }
