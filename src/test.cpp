@@ -10,6 +10,7 @@
 
 #include "Button.h"
 #include "Font.h"
+#include "Frame.h"
 #include "Image.h"
 #include "Text.h"
 #include "TextField.h"
@@ -25,6 +26,7 @@ class MyWin : public Window {
     Text txt;
     TextField field;
     Image img;
+    Frame frame;
 
    public:
     MyWin(int x, int y, int width, int height, const std::string& title, const SDL_Color& col)
@@ -39,10 +41,11 @@ class MyWin : public Window {
         but.click_callback = [this](int x, int y) { this->Print(); };
         // but.OnClick = MyWin::Print();
 
-        this->Add(&txt);
-        this->Add(&but);
-        this->Add(&field);
-        this->Add(&img);
+        frame.Add(&txt);
+        frame.Add(&but);
+        frame.Add(&field);
+        frame.Add(&img);
+        this->Add(&frame);
     }
     void Print() { std::cout << "text = " << this->field.GetText() << std::endl; }
 };
