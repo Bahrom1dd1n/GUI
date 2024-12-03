@@ -1,6 +1,7 @@
 #ifndef __IMAGE__
 #define __IMAGE__
 
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
@@ -10,7 +11,6 @@
 
 #include "Element.h"
 #include "Window.h"
-
 class Image : public Element {
    protected:
     struct ImageInfo {
@@ -63,17 +63,15 @@ class Image : public Element {
     void Draw() override;
     // return true if this element contains point of given coordinates
     bool ContainPoint(int x, int y) override;
-    // behavior of gui elemnt when it's been pressed
-    void Click() override;
     // focuse to current gui element (when mouse clicked on it or some specific event is happened)
     void Focuse() override;
     // unfocuses gui element
     void Unfocuse() override;
+    // Behavior of Image element whene Mouse is clicked on it
+    void MouseDown(const Event& event) override;
     // behavior of gui element when when specific key is pressed
-    void KeyPress(uint32_t key) override;
+    void KeyDown(const Event& event) override;
     // behavior of gui element when when typed
-    void Type(char) override;
-    // behavior of gui element when mouse enters area of gui element
     ~Image();
     friend class Font;
 };

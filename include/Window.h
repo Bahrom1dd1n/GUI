@@ -28,12 +28,11 @@ class Window {
     Element* focused_element = nullptr;  // focused element , focused by mouse click or some event
     Element* hovered_element = nullptr;  // element which mouse is moving over
     bool running = false;                // condition of main loop of Window
-    void OnMouseDown(int x, int y);
+    void OnMouseDown(const Event& event);
 
-    void OnMouseMove(int x, int y);
+    void OnMouseMove(const Event& event);
 
-    void OnTyped(char letter);
-    void OnKeyDown(uint32_t key);
+    void OnKeyDown(const Event& event);
 
    public:
     Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,

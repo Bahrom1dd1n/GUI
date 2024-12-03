@@ -10,6 +10,7 @@
 #include <iostream>
 #include <ostream>
 
+#include "Element.h"
 #include "Window.h"
 
 Image::Image(int x, int y, SDL_Renderer* ren, SDL_Texture* _texture) {
@@ -129,10 +130,6 @@ bool Image::ContainPoint(int x, int y) {
     return true;
 };
 // behavior of gui elemnt when it's been pressed
-void Image::Click() {
-
-};
-// focuse to current gui element (when mouse clicked on it or some specific event is happened)
 void Image::Focuse() {
 
 };
@@ -141,11 +138,5 @@ void Image::Unfocuse() {
 
 };
 // behavior of gui element when when specific key is pressed
-void Image::KeyPress(uint32_t key) {
-
-};
-// behavior of gui element when when typed
-void Image::Type(char) {
-
-};
-// behavior of gui element when mouse enters area of gui element
+void Image::KeyDown(const Event& event) {};
+void Image::MouseDown(const Event& event) {};

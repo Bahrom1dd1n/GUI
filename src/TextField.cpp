@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "Element.h"
+
 TextField::TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color)
     : font(font), bg_color(bg_color) {
     this->renderer = win->main_ren;
@@ -50,7 +52,19 @@ bool TextField::ContainPoint(int x, int y) {
     return true;
 };
 // behavior of gui elemnt when it's been pressed
-void TextField::Click() {};
+void TextField::MouseDown(const Event& event) {
+    if (!this->ContainPoint(event.button.x, event.button.y)) return;
+    int m_dis = event.button.x - this->rect.x;
+    cursor_x = padding;
+    cursor_index = start;
+    int i = start;
+
+    while (cursor_x < m_dis && cursor_index < text.size()) {
+        cursor_x += this->font.GetLetterWidth(this->text[i]);
+        i++;
+        cursor_index++;
+    }
+};
 // focuse to current gui element (when mouse clicked on it or some specific event is happened)
 void TextField::Focuse() {
     printf("clicked\n");
@@ -66,8 +80,10 @@ void TextField::Unfocuse() {
     this->focused = false;
 };
 // behavior of gui element when when specific key is pressed
-void TextField::KeyPress(uint32_t key) {
-    switch (key) {
+void TextField::KeyDown(const Event& event) {
+    char letter = event.text.text[0];
+    if (31 < letter && 127 > letter) this->Type(letter);
+    switch (event.key.keysym.sym) {
         case SDLK_BACKSPACE:
             cursor_blink = 1;
             if (cursor_index) {

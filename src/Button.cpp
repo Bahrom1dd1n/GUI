@@ -1,4 +1,7 @@
 #include "Button.h"
+
+#include "Element.h"
+
 void Button::Click() {
     this->clicked = 2;
 
@@ -7,11 +10,15 @@ void Button::Click() {
     this->rect.w -= 2;
     this->rect.h -= 2;
 };
+
 void Button::Focuse() {};
 void Button::Unfocuse() {};
-void Button::KeyPress(uint32_t key) {};
+void Button::MouseDown(const Event& event) {
+    this->Click();
+    if (this->click_callback) this->click_callback(event.button.x, event.button.y);
+}
+void Button::KeyDown(const Event& event) {};
 
-void Button::Type(char) {};
 bool Button::ContainPoint(int x, int y) {
     if (x < this->rect.x || x > this->rect.x + this->rect.w) return false;
     if (y < this->rect.y || y > this->rect.y + this->rect.h) return false;

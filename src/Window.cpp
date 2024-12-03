@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include <SDL2/SDL_events.h>
+
 #include <iostream>
 
 Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
@@ -43,18 +45,14 @@ void Window::Start() {
                     running = false;
                     break;
 
-                case SDL_TEXTINPUT:
-                    OnTyped(event.text.text[0]);
-                    break;
-
                 case SDL_KEYDOWN:
-                    OnKeyDown(event.key.keysym.sym);
+                    this->OnKeyDown(event);
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    this->OnMouseDown(event.button.x, event.button.y);
+                    this->OnMouseDown(event);
                     break;
-
+                    // case SDL_TEXTINPUT: OnTyped(event.text.text[0]);break;
                     // case SDL_MOUSEMOTION:this->OnMouseMove(event.button.x, event.button.y);
             }
         }
@@ -78,9 +76,11 @@ void Window::Start() {
 void Window::Stop() {
     this->running = false;
 }
-void Window::OnMouseDown(int x, int y) {
+void Window::OnMouseDown(const SDL_Event& event) {
     printf("Muse clicked\n");
     auto it = this->elements.begin();
+    int x = event.button.x;
+    int y = event.button.y;
     while (it != this->elements.end()) {
         if ((*it)->ContainPoint(x, y)) {
             if (focused_element != *it) {
@@ -88,8 +88,7 @@ void Window::OnMouseDown(int x, int y) {
                 this->focused_element = *it;
                 (*it)->Focuse();
             }
-            (*it)->Click();
-            if ((*it)->click_callback) (*it)->click_callback(x, y);
+            (*it)->MouseDown(event);
             break;
         }
         it++;
@@ -125,14 +124,8 @@ void Window::OnMouseDown(int x, int y) {
     }
 }*/
 
-void Window::OnTyped(char letter) {
-    if (!this->focused_element) return;
-    this->focused_element->Type(letter);
-}
-void Window::OnKeyDown(uint32_t key) {
-    if (!this->focused_element) return;
-    if (focused_element->keypress_callback) this->focused_element->keypress_callback(key);
-    this->focused_element->KeyPress(key);
+void Window::OnKeyDown(const Event& event) {
+    if (this->focused_element) this->focused_element->KeyDown(event);
 }
 
 void Window::Add(Element* elem) {

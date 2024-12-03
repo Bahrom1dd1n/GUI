@@ -36,7 +36,7 @@ class MyWin : public Window {
         this->img.Init(this, 10, 200, "./assets/images/toretto.jpg");
         img.Scale(0.3);
         img.RotateTo(45);
-
+        but.click_callback = [this](int x, int y) { this->Print(); };
         // but.OnClick = MyWin::Print();
 
         this->Add(&txt);

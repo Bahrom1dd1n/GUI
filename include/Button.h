@@ -8,6 +8,7 @@
 #include <SDL2/SDL_surface.h>
 
 #include <cstdint>
+#include <functional>
 
 #include "Element.h"
 #include "Font.h"
@@ -23,20 +24,21 @@ class Button : public Element {
     uint8_t clicked = 0;
 
    public:
+    std::function<void(int, int)> click_callback;
     Button() {};
     Button(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
            const SDL_Color& color);
     void Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
               const SDL_Color& color);
+    inline const std::string& GetName() const { return this->name_text.GetText(); };
+    void Click();
     void SetPosition(int x, int y);
     void Draw() override;
-    void Click() override;
     void Focuse() override;
     void Unfocuse() override;
-    void KeyPress(uint32_t key) override;
-    void Type(char) override;
+    void MouseDown(const Event& event) override;
+    void KeyDown(const Event& event) override;
     bool ContainPoint(int x, int y) override;
-    inline const std::string& GetName() const { return this->name_text.GetText(); };
 };
 
 #endif  // __BUTTON__

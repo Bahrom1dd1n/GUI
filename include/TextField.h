@@ -1,6 +1,7 @@
 #ifndef __TEXT_FIELD__
 #define __TEXT_FIELD__
 
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_rect.h>
@@ -12,7 +13,6 @@
 #include "Element.h"
 #include "Font.h"
 #include "Window.h"
-
 class TextField : public Element {
    private:
     Font font;
@@ -36,21 +36,19 @@ class TextField : public Element {
 
     void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
     inline const std::string& GetText() const { return this->text; }
-    void Draw() override;
+    void Type(char);
 
+    void Draw() override;
     // return true if this element contains point of given coordinates
     bool ContainPoint(int x, int y) override;
-    // behavior of gui elemnt when it's been pressed
-    void Click() override;
     // focuse to current gui element (when mouse clicked on it or some specific event is happened)
     void Focuse() override;
     // unfocuses gui element
     void Unfocuse() override;
     // behavior of gui element when when specific key is pressed
-    void KeyPress(uint32_t key) override;
-    // behavior of gui element when when typed
-    void Type(char) override;
-    // behavior of gui element when mouse enters area of gui element
+    void KeyDown(const Event& event) override;
+    // behavior of gui element it's clicked
+    void MouseDown(const Event& event) override;
 };
 
 #endif  //!__TEXT_FIELD__

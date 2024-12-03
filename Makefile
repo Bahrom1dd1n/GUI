@@ -1,7 +1,7 @@
 
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -I./include -I/usr/include/SDL2
+CXXFLAGS =-g -Wall -Wextra -std=c++17 -I./include -I/usr/include/SDL2
 
 # SDL2 libraries
 CLIBS = -lSDL2 -lSDL2_ttf -lSDL2_image
