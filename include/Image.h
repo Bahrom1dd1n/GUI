@@ -62,7 +62,7 @@ class Image : public Element {
 
     void Draw() override;
     // return true if this element contains point of given coordinates
-    bool ContainPoint(int x, int y) override;
+    Element* ContainPoint(int x, int y) override;
     // focuse to current gui element (when mouse clicked on it or some specific event is happened)
     void Focuse() override;
     // unfocuses gui element

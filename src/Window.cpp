@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <iostream>
 
+#include "Element.h"
+
 Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
                const SDL_Color& background_cl, uint32_t max_fps) {
     this->window_width = window_width;
@@ -81,20 +83,23 @@ void Window::Stop() {
 }
 void Window::OnMouseDown(const SDL_Event& event) {
     printf("Muse clicked\n");
-    auto it = this->elements.begin();
     int x = event.button.x;
     int y = event.button.y;
-    while (it != this->elements.end()) {
-        if ((*it)->ContainPoint(x, y)) {
-            if (this->focused_element != (*it)) this->focused_element->Unfocuse();
-            this->focused_element = *it;
-            (*it)->Focuse();
-            (*it)->MouseDown(event);
+    Element* elem = nullptr;
+    for (auto i : elements) {
+        elem = i->ContainPoint(x, y);
+        if (elem) {
+            if (this->focused_element != elem) {
+                if (focused_element) focused_element->Unfocuse();
+                elem->Focuse();
+            }
+            elem->MouseDown(event);
+            this->focused_element = elem;
             break;
         }
-        it++;
     }
-    if (this->focused_element && it == this->elements.end()) {
+
+    if (!elem && focused_element) {
         this->focused_element->Unfocuse();
         this->focused_element = nullptr;
     }

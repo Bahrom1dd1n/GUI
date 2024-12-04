@@ -38,7 +38,7 @@ class Button : public Element {
     void Unfocuse() override;
     void MouseDown(const Event& event) override;
     void KeyDown(const Event& event) override;
-    bool ContainPoint(int x, int y) override;
+    Element* ContainPoint(int x, int y) override;
 };
 
 #endif  // __BUTTON__

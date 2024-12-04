@@ -46,10 +46,10 @@ void TextField::Draw() {
     }
 }
 // return true if this element contains point of given coordinates
-bool TextField::ContainPoint(int x, int y) {
-    if (x < rect.x || x > rect.x + rect.w) return false;
-    if (y < rect.y || y > rect.y + rect.h) return false;
-    return true;
+Element* TextField::ContainPoint(int x, int y) {
+    if (x < rect.x || x > rect.x + rect.w) return nullptr;
+    if (y < rect.y || y > rect.y + rect.h) return nullptr;
+    return this;
 };
 // behavior of gui elemnt when it's been pressed
 void TextField::MouseDown(const Event& event) {

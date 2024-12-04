@@ -8,7 +8,6 @@ class Frame : public Element {
    private:
     std::vector<Element*> children;
     Element* focused = nullptr;
-    Element* may_focused = nullptr;
 
    public:
     Frame() = default;
@@ -16,7 +15,7 @@ class Frame : public Element {
     inline const std::vector<Element*>& GetChildren() const { return this->children; }
     void Draw() override;
     // return true if this element contains point of given coordinates
-    bool ContainPoint(int x, int y) override;
+    Element* ContainPoint(int x, int y) override;
     // behavior of gui elemnt when it's has been clicked by mouse
     void MouseDown(const Event& e) override;
     // behavior of gui element when key is pressed while it was focused

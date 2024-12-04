@@ -19,10 +19,10 @@ void Button::MouseDown(const Event& event) {
 }
 void Button::KeyDown(const Event& event) {};
 
-bool Button::ContainPoint(int x, int y) {
-    if (x < this->rect.x || x > this->rect.x + this->rect.w) return false;
-    if (y < this->rect.y || y > this->rect.y + this->rect.h) return false;
-    return true;
+Element* Button::ContainPoint(int x, int y) {
+    if (x < this->rect.x || x > this->rect.x + this->rect.w) return nullptr;
+    if (y < this->rect.y || y > this->rect.y + this->rect.h) return nullptr;
+    return this;
 }
 Button::Button(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
                const SDL_Color& color)

@@ -116,18 +116,18 @@ void Image::Draw() {
     this->DrawPart(NULL);
 };
 // return true if this element contains point of given coordinates
-bool Image::ContainPoint(int x, int y) {
+Element* Image::ContainPoint(int x, int y) {
     if (this->angle) {
         x = (x - rect.x) * cos_a;
         y = (y - rect.y) * sin_a;
 
-        if (x > rect.w || x < 0) return false;
-        if (y > rect.h || y < 0) return false;
-        return true;
+        if (x > rect.w || x < 0) return nullptr;
+        if (y > rect.h || y < 0) return nullptr;
+        return this;
     }
-    if (x < this->rect.x || x > this->rect.x + this->rect.w) return false;
-    if (y < this->rect.y || y > this->rect.y + this->rect.h) return false;
-    return true;
+    if (x < this->rect.x || x > this->rect.x + this->rect.w) return nullptr;
+    if (y < this->rect.y || y > this->rect.y + this->rect.h) return nullptr;
+    return this;
 };
 // behavior of gui elemnt when it's been pressed
 void Image::Focuse() {
