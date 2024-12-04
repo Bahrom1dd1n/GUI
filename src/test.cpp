@@ -11,11 +11,11 @@
 #include "Button.h"
 #include "Font.h"
 #include "Frame.h"
+#include "HiddenField.h"
 #include "Image.h"
 #include "Text.h"
 #include "TextField.h"
 #include "Window.h"
-
 const int windowWidth = 400;
 const int windowHeight = 600;
 
@@ -25,6 +25,7 @@ class MyWin : public Window {
     Button but;
     Text txt;
     TextField field;
+    HiddenField password;
     Image img;
     Frame frame;
 
@@ -35,16 +36,17 @@ class MyWin : public Window {
         this->txt.Init(this, 10, 60, "This is Text", font);
         this->but.Init(this, 10, 10, 100, 30, "Button", font, {10, 200, 10, 255});
         this->field.Init(this, 120, 10, 20, font, {255, 255, 255, 255});
-        this->img.Init(this, 10, 200, "./assets/images/toretto.jpg");
-        img.Scale(0.3);
-        img.RotateTo(45);
+        this->password.Init(this, 120, 50, 20, font, {255, 255, 255, 255});
+        this->img.Init(this, 10, 200, "./assets/images/hide.png");
+        img.Scale(1);
+        img.RotateTo(0);
         but.click_callback = [this](int x, int y) { this->Print(); };
         // but.OnClick = MyWin::Print();
-
         frame.Add(&txt);
         frame.Add(&but);
         frame.Add(&field);
         frame.Add(&img);
+        frame.Add(&password);
         this->Add(&frame);
     }
     void Print() { std::cout << "text = " << this->field.GetText() << std::endl; }

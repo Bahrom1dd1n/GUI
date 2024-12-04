@@ -15,15 +15,15 @@
 #include "Font.h"
 #include "Window.h"
 class TextField : public Element {
-   private:
+   protected:
     Font font;
     std::string text;
     SDL_Rect rect;
     SDL_Color bg_color;
     uint32_t cursor_index = 0;
-    uint32_t cursor_x = 0;
     uint32_t max_length = 0;
     uint32_t start = 0;
+    int cursor_x = 0;
     char cursor_blink = 0;
 
     bool focused = false;

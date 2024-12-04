@@ -65,7 +65,7 @@ void TextField::MouseDown(const Event& event) {
             i++;
             cursor_index++;
         }
-        int width = font.GetLetterWidth(this->text[cursor_index]);
+        int width = font.GetLetterWidth(this->text[cursor_index - 1]);
         if ((cursor_x - m_dis) * 2 > width) {
             cursor_x -= width;
             cursor_index--;

@@ -34,10 +34,6 @@ class Image : public Element {
     Image& operator=(const Image& t);
     void Init(Window* win, int x, int y, const char* path);
     void Load(const char* path, Window* win = nullptr);
-    void Scale(double ratio) {
-        this->rect.w = this->img_info->original_width * ratio;
-        this->rect.h = this->img_info->original_height * ratio;
-    }
 
     void DrawPart(const SDL_Rect* src_rect = NULL) const;
 
@@ -51,8 +47,35 @@ class Image : public Element {
     inline int GetX() const { return this->rect.x; }
     inline int GetY() const { return this->rect.y; }
 
-    inline void SetWidth(int width) { this->rect.w = width; }
-    inline void SetHeight(int height) { this->rect.h = height; }
+    inline bool Loaded() const {
+        if (!img_info) return false;
+        if (!img_info->texture) return false;
+        return true;
+    }
+
+    inline void Scale(double ratio) {
+        this->rect.w = this->img_info->original_width * ratio;
+        this->rect.h = this->img_info->original_height * ratio;
+    }
+
+    inline void SetWidth(int width, bool save_ratio = false) {
+        if (save_ratio) {
+            double ratio = double(width) / rect.w;
+            this->rect.w *= ratio;
+            this->rect.h *= ratio;
+            return;
+        }
+        this->rect.w = width;
+    }
+    inline void SetHeight(int height, bool save_ratio = false) {
+        if (save_ratio) {
+            double ratio = double(height) / rect.h;
+            this->rect.w *= ratio;
+            this->rect.h *= ratio;
+            return;
+        }
+        this->rect.h = height;
+    }
     inline void SetX(const int x) { this->rect.x = x; }
     inline void SetY(const int y) { this->rect.y = y; }
     inline void SetPosition(const int x, const int y) {

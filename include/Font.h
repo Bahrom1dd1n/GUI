@@ -56,6 +56,7 @@ class Font {
     friend class Button;
     friend class TextField;
     friend class Text;
+    friend class HiddenField;
 };
 
 #endif  //! __FONT__

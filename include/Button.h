@@ -12,6 +12,7 @@
 
 #include "Element.h"
 #include "Font.h"
+#include "Image.h"
 #include "Text.h"
 #include "Window.h"
 
@@ -19,6 +20,7 @@ class Button : public Element {
    private:
     const static uint32_t nm_padding = 2;
     Text name_text;
+    Image img;
     SDL_Rect rect;
     SDL_Color col;
     uint8_t clicked = 0;
@@ -32,7 +34,14 @@ class Button : public Element {
               const SDL_Color& color);
     inline const std::string& GetName() const { return this->name_text.GetText(); };
     void Click();
-    void SetPosition(int x, int y);
+    inline void SetPosition(int x, int y) {
+        rect.x = x;
+        rect.y = y;
+    };
+    inline void SetX(int x) { rect.x = x; }
+    inline void SetY(int y) { rect.y = y; }
+    inline uint32_t GetWidth() const { return rect.w; }
+    inline uint32_t GetHeight() const { return rect.h; }
     void Draw() override;
     void Focuse() override;
     void Unfocuse() override;

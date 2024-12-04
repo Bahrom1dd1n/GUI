@@ -97,6 +97,7 @@ void Window::OnMouseDown(const SDL_Event& event) {
             this->focused_element = elem;
             break;
         }
+        if (mousedown_callback) mousedown_callback(event.button.x, event.button.y);
     }
 
     if (!elem && focused_element) {
@@ -132,6 +133,7 @@ void Window::OnMouseDown(const SDL_Event& event) {
 
 void Window::OnKeyDown(const Event& event) {
     if (this->focused_element) this->focused_element->KeyDown(event);
+    if (keydown_callback) keydown_callback(event.key.keysym.sym);
 }
 
 void Window::Add(Element* elem) {

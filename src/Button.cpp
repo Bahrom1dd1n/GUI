@@ -49,12 +49,6 @@ void Button::Init(Window* win, int x, int y, int width, int height, const std::s
     this->col = color;
 };
 
-void Button::SetPosition(int x, int y) {
-    this->name_text.SetX(name_text.GetX() + x - this->rect.x);
-    this->name_text.SetY(name_text.GetY() + y - this->rect.y);
-    this->rect.x = x;
-    this->rect.y = y;
-}
 void Button::Draw() {
     SDL_SetRenderDrawColor(this->renderer, col.r, col.g, col.b, col.a);
     SDL_RenderFillRect(this->renderer, &rect);

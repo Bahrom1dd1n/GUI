@@ -7,6 +7,8 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
+#include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -28,9 +30,12 @@ class Window {
     Element* focused_element = nullptr;  // focused element , focused by mouse click or some event
     Element* hovered_element = nullptr;  // element which mouse is moving over
     bool running = false;                // condition of main loop of Window
+
+    std::function<void(int x, int y)> mousedown_callback;
+    std::function<void(uint32_t key)> keydown_callback;
     void OnMouseDown(const Event& event);
 
-    void OnMouseMove(const Event& event);
+    // void OnMouseMove(const Event& event);
 
     void OnKeyDown(const Event& event);
 
