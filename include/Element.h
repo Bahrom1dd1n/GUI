@@ -18,8 +18,8 @@ class Element {
     inline void SetVisible(bool visible) { this->visible = visible; };
     // drawing gui element on to the parent window
     virtual void Draw() = 0;
-    // return true if this element contains point of given coordinates
-    virtual bool ContainPoint(int x, int y) = 0;
+    // returns Element under point
+    virtual Element* ContainPoint(int x, int y) = 0;
     // behavior of gui elemnt when it's has been clicked by mouse
     virtual void MouseDown(const Event& e) = 0;
     // behavior of gui element when key is pressed while it was focused

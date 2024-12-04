@@ -86,11 +86,9 @@ void Window::OnMouseDown(const SDL_Event& event) {
     int y = event.button.y;
     while (it != this->elements.end()) {
         if ((*it)->ContainPoint(x, y)) {
-            if (focused_element != *it) {
-                if (this->focused_element) this->focused_element->Unfocuse();
-                this->focused_element = *it;
-                (*it)->Focuse();
-            }
+            if (this->focused_element != (*it)) this->focused_element->Unfocuse();
+            this->focused_element = *it;
+            (*it)->Focuse();
             (*it)->MouseDown(event);
             break;
         }
