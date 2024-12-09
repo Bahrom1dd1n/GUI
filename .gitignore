@@ -2,5 +2,5 @@
 *.a
 test
 .clangd
-./bin/
-./build/
+bin/
+build/
