@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iterator>
 
 #include "Element.h"
 
@@ -64,8 +65,8 @@ void Window::Start() {
         SDL_SetRenderDrawColor(main_ren, bg_cl.r, bg_cl.g, bg_cl.b, 255);
         SDL_RenderClear(main_ren);
 
-        for (int i = 0; i < this->elements.size(); i++) {
-            if (elements[i]->IsVisible()) elements[i]->Draw();
+        for (auto i : children) {
+            if (i->IsVisible()) i->Draw();
         }
 
         SDL_RenderPresent(main_ren);
@@ -86,7 +87,8 @@ void Window::OnMouseDown(const SDL_Event& event) {
     int x = event.button.x;
     int y = event.button.y;
     Element* elem = nullptr;
-    for (auto i : elements) {
+    for (auto it = children.rbegin(); it != children.rend(); it++) {
+        auto i = *it;
         elem = i->ContainPoint(x, y);
         if (elem) {
             if (this->focused_element != elem) {
@@ -112,8 +114,8 @@ void Window::OnMouseDown(const SDL_Event& event) {
 
     printf("Muse << moved >>\n");
     last_moved = current_time;
-    auto it = this->elements.begin();
-    while (it != this->elements.end()) {
+    auto it = this->children.begin();
+    while (it != this->children.end()) {
         if ((*it)->ContainPoint(x, y)) {
             if (hovered_element != *it) {
                 if (this->hovered_element) this->hovered_element->UnHover();
@@ -125,7 +127,7 @@ void Window::OnMouseDown(const SDL_Event& event) {
         }
         it++;
     }
-    if (this->hovered_element && it == this->elements.end()) {
+    if (this->hovered_element && it == this->children.end()) {
         this->hovered_element->UnHover();
         this->hovered_element = nullptr;
     }
@@ -137,7 +139,7 @@ void Window::OnKeyDown(const Event& event) {
 }
 
 void Window::Add(Element* elem) {
-    this->elements.push_back(elem);
+    this->children.push_back(elem);
 }
 
 Window::~Window() {

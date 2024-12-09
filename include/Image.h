@@ -82,7 +82,7 @@ class Image : public Element {
         this->rect.x = x;
         this->rect.y = y;
     }
-
+    inline const SDL_Rect& GetBorders() const { return this->rect; }
     void Draw() override;
     // return true if this element contains point of given coordinates
     Element* ContainPoint(int x, int y) override;

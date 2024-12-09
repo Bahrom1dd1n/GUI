@@ -3,12 +3,7 @@
 #include "Element.h"
 
 void Button::Click() {
-    this->clicked = 2;
-
-    this->rect.x += 1;
-    this->rect.y += 1;
-    this->rect.w -= 2;
-    this->rect.h -= 2;
+    this->clicked = 2 * dw;
 };
 
 void Button::Focuse() {};
@@ -52,13 +47,22 @@ void Button::Init(Window* win, int x, int y, int width, int height, const std::s
 void Button::Draw() {
     SDL_SetRenderDrawColor(this->renderer, col.r, col.g, col.b, col.a);
     SDL_RenderFillRect(this->renderer, &rect);
-    if (this->clicked > 1) {
-        this->clicked--;
-    } else {
-        if (this->clicked == 1) {
-            this->rect = {rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2};
-            this->clicked = 0;
+    // if (this->clicked > 0) {
+    //     this->clicked--;
+    //
+    // } else {
+    //     if (this->clicked == 1) {
+    //         this->rect = {rect.x - dw, rect.y - dw, rect.w + dw * 2, rect.h + dw * 2};
+    //         this->clicked = 0;
+    //     }
+    // }
+    if (clicked > 0) {
+        if (clicked > dw) {
+            rect = {rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2};
+        } else {
+            rect = {rect.x - 1, rect.y - 1, rect.w + 2, rect.h + 2};
         }
+        clicked--;
     }
     name_text.Draw();
 };

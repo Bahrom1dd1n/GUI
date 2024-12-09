@@ -8,9 +8,9 @@ void Frame::Draw() {
 }
 // return true if this element contains point of given coordinates
 Element* Frame::ContainPoint(int x, int y) {
-    for (auto i : children) {
-        if (i->ContainPoint(x, y)) {
-            return i;
+    for (auto it = children.rbegin(); it != children.rend(); it++) {
+        if ((*it)->ContainPoint(x, y)) {
+            return *it;
         };
     }
     return nullptr;

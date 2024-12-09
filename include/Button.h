@@ -19,6 +19,7 @@
 class Button : public Element {
    private:
     const static uint32_t nm_padding = 2;
+    const static int dw = 2;
     Text name_text;
     Image img;
     SDL_Rect rect;

@@ -26,7 +26,7 @@ class Window {
     SDL_Renderer* main_ren = nullptr;
     SDL_Window* window = nullptr;
     SDL_Color bg_cl = {0, 0, 0};         // background color
-    std::vector<Element*> elements;      // list of elements which will be drawn on Window
+    std::vector<Element*> children;      // list of children which will be drawn on Window
     Element* focused_element = nullptr;  // focused element , focused by mouse click or some event
     Element* hovered_element = nullptr;  // element which mouse is moving over
     bool running = false;                // condition of main loop of Window
@@ -54,6 +54,8 @@ class Window {
     friend class Font;
     friend class Image;
     friend class TextField;
+    friend class HiddenField;
+    friend class Rectangle;
 };
 
 #endif  //!__WINDOW__

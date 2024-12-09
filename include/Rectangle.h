@@ -8,6 +8,7 @@
 #include <SDL2/SDL_surface.h>
 
 #include "Element.h"
+#include "Window.h"
 
 class Rectangle : public Element {
    private:
@@ -15,10 +16,17 @@ class Rectangle : public Element {
     SDL_Color color;
 
    public:
-    inline void SetX(int x) { rect.x = x; }
-    inline void SetY(int y) { rect.y = y; }
+    void Init(Window* win, int x, int y, int width, int height, const SDL_Color color);
+    inline void SetX(const int x) { this->rect.x = x; }
+    inline void SetY(const int y) { this->rect.y = y; }
+    inline void SetPosition(const int x, const int y) {
+        this->rect.x = x;
+        this->rect.y = y;
+    }
     inline uint32_t GetWidth() const { return rect.w; }
     inline uint32_t GetHeight() const { return rect.h; }
+    inline int GetX() const { return rect.x; }
+    inline int GetY() const { return rect.y; }
     void Draw() override;
     void Focuse() override;
     void Unfocuse() override;

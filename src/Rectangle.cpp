@@ -1,6 +1,11 @@
 #include "Rectangle.h"
 
 #include <SDL2/SDL_render.h>
+void Rectangle::Init(Window* win, int x, int y, int width, int height, const SDL_Color color) {
+    this->renderer = win->main_ren;
+    this->rect = {x, y, width, height};
+    this->color = color;
+}
 void Rectangle::Draw() {
     SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(this->renderer, &rect);

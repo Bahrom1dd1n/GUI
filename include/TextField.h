@@ -39,6 +39,16 @@ class TextField : public Element {
 
     void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
     inline const std::string& GetText() const { return this->text; }
+    inline uint32_t GetWidth() const { return rect.w; }
+    inline uint32_t GetHeight() const { return rect.h; }
+    inline int GetX() const { return rect.x; }
+    inline int GetY() const { return rect.y; }
+    inline void SetX(const int x) { this->rect.x = x; }
+    inline void SetY(const int y) { this->rect.y = y; }
+    inline void SetPosition(const int x, const int y) {
+        this->rect.x = x;
+        this->rect.y = y;
+    }
     void Type(char);
 
     void Draw() override;

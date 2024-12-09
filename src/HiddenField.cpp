@@ -1,5 +1,7 @@
 #include "HiddenField.h"
 
+#include <SDL2/SDL_image.h>
+
 #include "Element.h"
 #include "Image.h"
 #include "TextField.h"
@@ -12,7 +14,7 @@ HiddenField::HiddenField(Window* win, int x, int y, uint32_t length, Font& font,
     eye.SetY(rect.y);
     eye.SetWidth(eye.GetWidth() / 2);
     eye.SetHeight(rect.h, true);
-    eye_src = {global_img.GetWidth() >> 1, 0, global_img.GetWidth() >> 1, global_img.GetHeight()};
+    eye_src = {0, 0, global_img.GetWidth() >> 1, global_img.GetHeight()};
 }
 
 void HiddenField::Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color) {
@@ -23,13 +25,11 @@ void HiddenField::Init(Window* win, int x, int y, uint32_t length, Font& font, c
     eye.SetY(rect.y);
     eye.SetWidth(eye.GetWidth() / 2);
     eye.SetHeight(rect.h, true);
-    eye_src = {global_img.GetWidth() >> 1, 0, global_img.GetWidth() >> 1, global_img.GetHeight()};
+    eye_src = {0, 0, global_img.GetWidth() >> 1, global_img.GetHeight()};
 };
 void HiddenField::Draw() {
     SDL_SetRenderDrawColor(this->renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
     SDL_RenderFillRect(this->renderer, &this->rect);
-    SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.b, 255 - bg_color.r, 255 - bg_color.g, 255);
-    SDL_RenderDrawRect(this->renderer, &this->rect);
     uint32_t length = text.size() - start;
     if (length > max_length) length = max_length;
 
@@ -40,7 +40,6 @@ void HiddenField::Draw() {
         for (int i = 0; i < length; i++, x += dx) this->font.DrawText(this->renderer, x, rect.y + padding, star, 1);
     } else
         this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start, length);
-
     if (this->focused) {
         if (this->cursor_blink > 0) {
             SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.g, bg_color.b, 255 - bg_color.b, bg_color.a);
@@ -50,6 +49,9 @@ void HiddenField::Draw() {
         cursor_blink += 5;
     }
     eye.DrawPart(&eye_src);
+    SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.b, 255 - bg_color.r, 255 - bg_color.g, 255);
+    SDL_RenderDrawRect(this->renderer, &this->rect);
+    // SDL_RenderDrawRect(renderer, &eye.GetBorders());
 }
 
 Element* HiddenField::ContainPoint(int x, int y) {
@@ -61,11 +63,11 @@ Element* HiddenField::ContainPoint(int x, int y) {
 void HiddenField::MouseDown(const Event& event) {
     if (eye.ContainPoint(event.button.x, event.button.y)) {
         if (hidden) {
-            eye_src.x = 0;
+            eye_src.x = global_img.GetWidth() >> 1;
             hidden = false;
         } else {
+            eye_src.x = 0;
             hidden = true;
-            eye_src.x = global_img.GetWidth() >> 1;
         }
         return;
     }
