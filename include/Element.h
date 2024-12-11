@@ -28,5 +28,6 @@ class Element {
     virtual void Focuse() = 0;
     // unfocuses gui element
     virtual void Unfocuse() = 0;
+    virtual ~Element();
 };
 #endif  // !__SHARED_TEXTRE__

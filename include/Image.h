@@ -7,10 +7,11 @@
 #include <SDL2/SDL_render.h>
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 
 #include "Element.h"
-#include "Window.h"
+class Window;
 class Image : public Element {
    protected:
     struct ImageInfo {
@@ -27,16 +28,23 @@ class Image : public Element {
     Image(int x, int y, SDL_Renderer* ren, SDL_Texture* texture);
 
    public:
-    Image() = default;
+    inline Image() { this->img_info = nullptr; };
     Image(const Image& t);
     Image(Image&& t) noexcept;
     Image(Window* win, int x, int y, const char* path);
     Image& operator=(const Image& t);
+    inline operator bool() const {
+        if (!this->img_info) return false;
+        if (!img_info->texture) return false;
+        return true;
+    }
     void Init(Window* win, int x, int y, const char* path);
     void Load(const char* path, Window* win = nullptr);
 
     void DrawPart(const SDL_Rect* src_rect = NULL) const;
-
+    inline void DrawTo(const SDL_Rect* dst_rect, const SDL_Rect* src_rect = NULL) const {
+        SDL_RenderCopy(this->renderer, this->img_info->texture, src_rect, dst_rect);
+    };
     inline void RotateTo(const double angle) {
         this->angle = angle;
         this->cos_a = std::cos(angle);

@@ -13,8 +13,8 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 # Project name
-TARGET = $(BIN_DIR)/my_project
-
+TARGET = test
+STATIC_LIB = gui.a
 # Find all source files in SRC_DIR
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 # Convert source files to object files in BUILD_DIR
@@ -25,9 +25,9 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 all: $(TARGET)
 
 # Linking the final executable
-$(TARGET): $(OBJS)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(OBJS) -o $@ $(CLIBS)
+$(TARGET): $(STATIC_LIB)
+	$(CXX) $(CXXFLAGS) -c $(<).cpp -o $(<).o
+	$(CXX) -g $@ ./$(STATIC_LIB) $(CLIBS)
 
 # Compiling source files into object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp

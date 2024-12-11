@@ -2,18 +2,16 @@
 
 #include <SDL2/SDL_events.h>
 
+#include <cmath>
+#include <cstddef>
 #include <cstdio>
 #include <iostream>
 #include <iterator>
 
 #include "Element.h"
 
-Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
-               const SDL_Color& background_cl, uint32_t max_fps) {
-    this->window_width = window_width;
-    this->window_height = window_height;
-    this->bg_cl = background_cl;
-
+Window::Window(uint32_t x, uint32_t y, const uint32_t window_width, const uint32_t window_height,
+               const std::string& title, const SDL_Color& background_cl, uint32_t max_fps, int flags) {
     // Default value
     if (max_fps)
         frame_delay = 1000 / max_fps;
@@ -31,9 +29,16 @@ Window::Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_he
     // Request a window to be created for our platform
     // The parameters are for the title, x and y position,
     // and the width and height of the window.
-    window = SDL_CreateWindow(title.c_str(), x, y, window_width, window_height, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(title.c_str(), x, y, window_width, window_height, flags);
 
     main_ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (flags | SDL_WINDOW_FULLSCREEN) {
+        SDL_GetRendererOutputSize(this->main_ren, &window_rect.w, &window_rect.h);
+        this->window_rect.x = 0;
+        this->window_rect.y = 0;
+    } else
+        window_rect = {0, 0, (int)window_width, (int)window_height};
+    this->bg_cl = background_cl;
 }
 
 void Window::Start() {
@@ -64,6 +69,7 @@ void Window::Start() {
         }
         SDL_SetRenderDrawColor(main_ren, bg_cl.r, bg_cl.g, bg_cl.b, 255);
         SDL_RenderClear(main_ren);
+        if (bg_img) bg_img.DrawTo(NULL);
 
         for (auto i : children) {
             if (i->IsVisible()) i->Draw();
