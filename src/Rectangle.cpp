@@ -1,6 +1,8 @@
 #include "Rectangle.h"
 
 #include <SDL2/SDL_render.h>
+
+#include "Window.h"
 Rectangle::Rectangle(Window* win, int x, int y, int width, int height, const SDL_Color color) {
     this->renderer = win->main_ren;
     this->rect = {x, y, width, height};

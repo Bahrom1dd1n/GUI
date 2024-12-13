@@ -28,7 +28,7 @@ void HiddenField::Init(Window* win, int x, int y, uint32_t length, Font& font, c
     eye_src = {0, 0, global_img.GetWidth() >> 1, global_img.GetHeight()};
 };
 void HiddenField::Draw() {
-    SDL_SetRenderDrawColor(this->renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(this->renderer, &this->rect);
     uint32_t length = text.size() - start;
     if (length > max_length) length = max_length;
@@ -42,14 +42,14 @@ void HiddenField::Draw() {
         this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start, length);
     if (this->focused) {
         if (this->cursor_blink > 0) {
-            SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.g, bg_color.b, 255 - bg_color.b, bg_color.a);
+            SDL_SetRenderDrawColor(this->renderer, 255 - color.g, color.b, 255 - color.b, color.a);
             SDL_Rect cursor_rect{int(cursor_x + rect.x + padding), rect.y + padding, 2, int(font.GetLetterHeight())};
             SDL_RenderFillRect(renderer, &cursor_rect);
         }
         cursor_blink += 5;
     }
     eye.DrawPart(&eye_src);
-    SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.b, 255 - bg_color.r, 255 - bg_color.g, 255);
+    SDL_SetRenderDrawColor(this->renderer, 255 - color.b, 255 - color.r, 255 - color.g, 255);
     SDL_RenderDrawRect(this->renderer, &this->rect);
     // SDL_RenderDrawRect(renderer, &eye.GetBorders());
 }

@@ -4,6 +4,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_ttf.h>
+#include <strings.h>
 
 #include <cstdint>
 #include <cstdio>
@@ -25,23 +26,10 @@ Font::Font(Font&& _font) noexcept {
     this->font_info = _font.font_info;
     _font.font_info = nullptr;
 }
+
 Font& Font::operator=(const Font& _font) {
-    if (this->font_info) {
-        FontData& data = *this->font_info;
-        // if this font is last holder of datta then delete data
-        if (this->font_info->link_count == 1) {
-            for (int i = sizeof(this->font_info->letters) - 1; i > -1; i--) {
-                SDL_DestroyTexture(data.letters[i]);
-            }
-            data.link_count = 0;
-            delete this->font_info;
-            this->font_info = nullptr;
-        }
-        // else decriment counter of data holders
-        else {
-            this->font_info->link_count--;
-        }
-    }
+    // if this font is last holder of datta then delete data
+    this->Destroy();
     if (_font.font_info) {
         this->font_info = _font.font_info;
         this->font_info->link_count++;
@@ -65,7 +53,7 @@ Font::Font(const char* font_path, size_t font_size, const SDL_Color& font_color)
 }
 
 void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_color) {
-    this->~Font();
+    this->Destroy();
     if (!ttf_init) {
         TTF_Init();
         ttf_init = true;
@@ -81,10 +69,13 @@ void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_c
 }
 
 // DrawText return width of Drawn text
-uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_t length, const SDL_Color& color) {
-    if (this->font_info->letters[0] == nullptr) this->LoadFontTextures(ren);
+int Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_t length, const SDL_Color& color) {
+    if (this->font_info->texture == nullptr) this->LoadFontTextures(ren);
 
     SDL_Rect rect = {x, y, 0, this->font_info->letter_height};
+    SDL_Rect src_rect = {0, 0, 0, font_info->letter_height};
+    SDL_SetTextureColorMod(font_info->texture, color.r, color.g, color.b);
+    SDL_SetTextureAlphaMod(font_info->texture, color.a);
     for (size_t i = 0; i < length; i++) {
         rect.x += rect.w;
         if (text[i] == '\0') break;
@@ -92,50 +83,59 @@ uint32_t Font::DrawText(SDL_Renderer* ren, int x, int y, const char* text, size_
         if (index < -1) continue;
         if (index < 0 || index > 96) index = '*' - 32;
         rect.w = font_info->letter_width[index];
-        SDL_Texture* letter_texture = font_info->letters[index];
-        SDL_SetTextureColorMod(letter_texture, color.r, color.g, color.b);
-        SDL_RenderCopy(ren, letter_texture, NULL, &rect);
+        src_rect.w = rect.w;
+        src_rect.x = font_info->letters[index];
+        SDL_RenderCopy(ren, font_info->texture, &src_rect, &rect);
     }
 
     return rect.x - x + rect.w;
 }
 
-Image Font::ConvertToImage(SDL_Renderer* ren, const std::string& text, const SDL_Color& color) {
-    if (this->font_info->letters[0] == nullptr) this->LoadFontTextures(ren);
-    SDL_Surface* surf = TTF_RenderText_Blended(this->font_info->_font, text.c_str(), color);
+Image Font::ConvertToImage(SDL_Renderer* ren, int x, int y, const std::string& text, const SDL_Color& color) {
+    if (this->font_info->texture == nullptr) this->LoadFontTextures(ren);
+    SDL_Color color_mod = {255, 255, 255, 255};
+    SDL_Surface* surf = TTF_RenderText_Blended(this->font_info->_font, text.c_str(), color_mod);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surf);
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
     SDL_FreeSurface(surf);
-    return Image(0, 0, ren, texture);
+    return Image(x, y, ren, texture);
 }
 void Font::LoadFontTextures(SDL_Renderer* ren) {
     if (!this->font_info) return;
     SDL_Color color = {255, 255, 255, 255};
     TTF_Font* font = this->font_info->_font;
+    char all_letters[97];
+    int offset = 0;
     for (int i = 32; i < 127; i++) {
-        char l[] = {char(i), '\0'};
-        SDL_Surface* surf = TTF_RenderText_Blended(font, l, color);
-        if (l[0] == 'A') this->font_info->letter_height = surf->h;
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(ren, surf);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        font_info->letters[i - 32] = texture;
-        font_info->letter_width[i - 32] = surf->w;
-        SDL_FreeSurface(surf);
+        all_letters[i - 32] = char(i);
+        int h, w = 0;
+        char letter[] = {char(i), '\0'};
+        TTF_SizeText(font, letter, &w, &h);
+        font_info->letter_width[i - 32] = w;
+        if (w > font_info->max_letter_width) font_info->max_letter_width = w;
+        font_info->letters[i - 32] = offset;
+        offset += w;
     }
-
-    // SDL_QueryTexture(letters['A'], NULL,NULL, &letter_width['A'],
-    // &letter_height);
-};
-Font::~Font() {
+    SDL_Surface* surf = TTF_RenderText_Blended(font, all_letters, color);
+    font_info->texture = SDL_CreateTextureFromSurface(ren, surf);
+    font_info->letter_height = surf->h;
+    SDL_SetTextureBlendMode(font_info->texture, SDL_BLENDMODE_BLEND);
+    SDL_FreeSurface(surf);
+}
+inline void Font::Destroy() {
     if (!this->font_info) return;
     if (this->font_info->link_count > 1) {
         this->font_info->link_count--;
         return;
     }
     // if this is last holder of data then release data
-    for (size_t i = this->font_info->num_letters - 1; i > -1; i--) SDL_DestroyTexture(this->font_info->letters[i]);
+    SDL_DestroyTexture(this->font_info->texture);
     TTF_CloseFont(this->font_info->_font);
     delete this->font_info;
+}
+Font::~Font() {
+    this->Destroy();
 }
 /*
  size_t RenderTextUntil(int x, int y, const char* text, char delim, size_t max_length) {

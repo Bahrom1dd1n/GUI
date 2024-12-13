@@ -8,37 +8,51 @@
 
 #include "Element.h"
 
-TextField::TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color)
-    : font(font), bg_color(bg_color) {
+TextField::TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_col,
+                     const SDL_Color& txt_col)
+    : font(font), color(bg_col), text_color(txt_col) {
     this->renderer = win->main_ren;
-    font.ConvertToImage(win->main_ren, "");
-    int width = font.GetLetterWidth('A') * length;
+    font.LoadFontTextures(win->main_ren);
+    int width = font.font_info->max_letter_width * length + 2 * padding;
     int height = font.GetLetterHeight() + 2 * padding;
     this->rect = {x, y, width, height};
     this->max_length = length;
 }
 
-void TextField::Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color) {
+void TextField::Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& color,
+                     const SDL_Color& text_color) {
     this->renderer = win->main_ren;
     this->font = font;
-    this->bg_color = bg_color;
-    font.ConvertToImage(win->main_ren, "");
-    int width = font.GetLetterWidth('A') * length + 2 * padding;
+    this->color = color;
+    this->text_color = text_color;
+    font.LoadFontTextures(win->main_ren);
+    int width = font.font_info->max_letter_width * length + 2 * padding;
     int height = font.GetLetterHeight() + 2 * padding;
     this->rect = {x, y, width, height};
     this->max_length = length;
 }
 void TextField::Draw() {
-    SDL_SetRenderDrawColor(this->renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
+    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(this->renderer, &this->rect);
-    SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.b, 255 - bg_color.r, 255 - bg_color.g, 255);
+    SDL_SetRenderDrawColor(this->renderer, 255 - color.b, 255 - color.r, 255 - color.g, 255);
     SDL_RenderDrawRect(this->renderer, &this->rect);
-    uint32_t length = text.size() - start;
-    if (length > max_length) length = max_length;
-    this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start, length);
+    if (this->text.size()) {
+        uint32_t length = text.size() - start;
+        if (length > max_length) length = max_length;
+        this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start, length,
+                            text_color);
+    } else {
+        if (!this->focused) {
+            uint8_t temp = text_color.a;
+            text_color.a = 20;
+            this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, placeholder.c_str() + start,
+                                placeholder.size(), text_color);
+            text_color.a = temp;
+        }
+    }
     if (this->focused) {
         if (this->cursor_blink > 0) {
-            SDL_SetRenderDrawColor(this->renderer, 255 - bg_color.g, bg_color.b, 255 - bg_color.b, bg_color.a);
+            SDL_SetRenderDrawColor(this->renderer, 255 - color.g, color.b, 255 - color.b, color.a);
             SDL_Rect cursor_rect{int(cursor_x + rect.x + padding), rect.y + padding, 2, int(font.GetLetterHeight())};
             SDL_RenderFillRect(renderer, &cursor_rect);
         }

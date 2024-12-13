@@ -24,6 +24,7 @@ class Frame : public Element {
     void Focuse() override;
     // unfocuses gui element
     void Unfocuse() override;
+    inline ~Frame() override {};
 };
 
 #endif  // !__FRAME__

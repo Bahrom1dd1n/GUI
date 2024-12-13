@@ -18,19 +18,23 @@ class Font {
    private:
     struct FontData {
         static const short num_letters = 96;
-        SDL_Texture* letters[num_letters] = {nullptr};
+        SDL_Texture* texture = nullptr;
         TTF_Font* _font = nullptr;
-        uint16_t letter_width[num_letters] = {0};
-        uint16_t letter_height = 0;
-        uint16_t link_count = 0;
+        int letters[num_letters] = {0};
+        int16_t letter_width[num_letters] = {0};
+        int16_t letter_height = 0;
+        int16_t max_letter_width = 0;
+        int16_t link_count = 0;
     };
     FontData* font_info = nullptr;
     static bool ttf_init;
-    uint32_t DrawText(SDL_Renderer* rend, int x, int y, const char* text, size_t length,
-                      const SDL_Color& color = {0, 0, 0, 255});
+    int32_t DrawText(SDL_Renderer* rend, int x, int y, const char* text, size_t length,
+                     const SDL_Color& color = {0, 0, 0, 255});
 
-    Image ConvertToImage(SDL_Renderer* ren, const std::string& text, const SDL_Color& color = {0, 0, 0, 255});
+    Image ConvertToImage(SDL_Renderer* ren, int x, int y, const std::string& text,
+                         const SDL_Color& color = {0, 0, 0, 255});
     void LoadFontTextures(SDL_Renderer* ren);
+    void Destroy();
 
    public:
     Font() = default;
@@ -43,9 +47,9 @@ class Font {
     void Init(const char* font_path, size_t font_size, const SDL_Color& font_color);
 
     // retunr height of font
-    inline uint32_t GetLetterHeight() const { return this->font_info->letter_height; };
+    inline int32_t GetLetterHeight() const { return this->font_info->letter_height; };
     // retunr width of texture of given letter
-    inline uint32_t GetLetterWidth(char letter) const {
+    inline int32_t GetLetterWidth(char letter) const {
         if (letter < 32 || letter > 126) return 0;
         return this->font_info->letter_width[letter - 32];
     };

@@ -13,13 +13,16 @@
 
 #include "Element.h"
 #include "Font.h"
+#include "Rectangle.h"
+#include "Text.h"
 #include "Window.h"
-class TextField : public Element {
+class TextField : public Rectangle {
    protected:
     Font font;
     std::string text;
-    SDL_Rect rect;
-    SDL_Color bg_color;
+    std::string placeholder;
+    SDL_Color color;
+    SDL_Color text_color;
     uint32_t cursor_index = 0;
     uint32_t max_length = 0;
     uint32_t start = 0;
@@ -35,20 +38,13 @@ class TextField : public Element {
     std::function<void(uint32_t key)> key_down_callback;
     TextField() = default;
 
-    TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
+    TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255},
+              const SDL_Color& text_color = {0, 0, 0, 255});
 
-    void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255});
+    void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255},
+              const SDL_Color& text_color = {0, 0, 0, 255});
     inline const std::string& GetText() const { return this->text; }
-    inline uint32_t GetWidth() const { return rect.w; }
-    inline uint32_t GetHeight() const { return rect.h; }
-    inline int GetX() const { return rect.x; }
-    inline int GetY() const { return rect.y; }
-    inline void SetX(const int x) { this->rect.x = x; }
-    inline void SetY(const int y) { this->rect.y = y; }
-    inline void SetPosition(const int x, const int y) {
-        this->rect.x = x;
-        this->rect.y = y;
-    }
+    void SetPlaceholder(const std::string& text) { this->placeholder.assign(text); }
     void Type(char);
 
     void Draw() override;
@@ -62,6 +58,7 @@ class TextField : public Element {
     void KeyDown(const Event& event) override;
     // behavior of gui element it's clicked
     void MouseDown(const Event& event) override;
+    inline ~TextField() override {};
 };
 
 #endif  //!__TEXT_FIELD__

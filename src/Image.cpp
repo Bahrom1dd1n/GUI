@@ -53,7 +53,7 @@ Image::Image(Window* win, int x, int y, const char* path) {
 
 Image& Image::operator=(const Image& t) {
     if (this->img_info) {
-        this->~Image();
+        this->Destroy();
     }
     if (t.img_info) {
         this->img_info = t.img_info;
@@ -80,7 +80,7 @@ void Image::Load(const char* path, Window* win) {
             std::cerr << " image with name " << path << " not found" << std::endl;
             exit(1);
         }
-        this->~Image();
+        this->Destroy();
         this->rect.x = 0;
         this->rect.y = 0;
         SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
@@ -97,18 +97,6 @@ inline void Image::DrawPart(const SDL_Rect* src_rect) const {
                          SDL_FLIP_NONE);
     } else {
         SDL_RenderCopy(this->renderer, this->img_info->texture, src_rect, &this->rect);
-    }
-}
-
-Image::~Image() {
-    if (this->img_info) {
-        if (this->img_info->link_count == 1) {
-            SDL_DestroyTexture(this->img_info->texture);
-            delete[] this->img_info;
-            this->img_info = nullptr;
-            return;
-        }
-        this->img_info->link_count--;
     }
 }
 
@@ -140,3 +128,17 @@ void Image::Unfocuse() {
 // behavior of gui element when when specific key is pressed
 void Image::KeyDown(const Event& event) {};
 void Image::MouseDown(const Event& event) {};
+inline void Image::Destroy() {
+    if (this->img_info) {
+        if (this->img_info->link_count == 1) {
+            SDL_DestroyTexture(this->img_info->texture);
+            delete[] this->img_info;
+            this->img_info = nullptr;
+            return;
+        }
+        this->img_info->link_count--;
+    }
+}
+Image::~Image() {
+    this->Destroy();
+}

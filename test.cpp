@@ -31,21 +31,26 @@ class MyWin : public Window {
     MyWin(int x, int y, int width, int height, const std::string& title, const SDL_Color& col)
         : Window(x, y, width, height, "My Window", col, 40,
                  SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS) {
-        Rectangle* rect_frame = new Rectangle(this, width / 2 - 150, height / 2 - 250, 300, 500, {0, 200, 30, 255});
+        this->InitRegPage();
+    }
+    void InitRegPage() {
         this->font.Init("./Font2.ttf", 18, {10, 10, 10, 255});
+        Rectangle* rect_frame =
+            new Rectangle(this, this->GetWidth() / 2 - 150, this->GetHeight() / 2 - 250, 300, 500, {0, 200, 30, 255});
         Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "PARKING", font);
         TextField* field = new TextField(this, 0, txt->GetY() + txt->GetHeight() + 30, 20, font, {255, 255, 255, 255});
         HiddenField* password =
             new HiddenField(this, 0, field->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
-        Button* but = new Button(this, width / 2 - 50, password->GetY() + password->GetHeight() + 50, 100, 30, "Log In",
-                                 font, {200, 20, 200, 255});
+        Button* but = new Button(this, this->GetWidth() / 2 - 50, password->GetY() + password->GetHeight() + 50, 100,
+                                 30, "Log In", font, {200, 20, 200, 255});
         int center = rect_frame->GetX() + rect_frame->GetWidth() / 2;
         txt->SetX(center - txt->GetWidth() / 2);
         field->SetX(center - field->GetWidth() / 2);
+        field->SetPlaceholder("Name");
         password->SetX(center - password->GetWidth() / 2);
         but->click_callback = [this](int x, int y) { this->Print(); };
-        bg_images.resize(4);
-        for (int i = 0; i < 4; i++) {
+        bg_images.resize(3);
+        for (int i = 0; i < bg_images.size(); i++) {
             char location[50];
             snprintf(location, sizeof(location), "./assets/images/bg_images/bg%d.jpg", i + 1);
             bg_images[i] = Image(this, 0, 0, location);

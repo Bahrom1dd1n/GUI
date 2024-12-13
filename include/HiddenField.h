@@ -23,10 +23,10 @@ class HiddenField : public TextField {
         eye.SetY(eye.GetY() + y - rect.y);
         rect.y = y;
     }
-    inline void SetPosition(int x, int y) {
-        this->SetY(y);
-        this->SetX(x);
-    }
+
+    inline void SetCenterX(int x) { this->SetX(x - (rect.w >> 1)); }
+    inline void SetCenterY(int y) { this->SetY(y - (rect.h >> 1)); }
+
     void Draw() override;
     Element* ContainPoint(int x, int y) override;
     void MouseDown(const Event& event) override;

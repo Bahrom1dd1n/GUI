@@ -10,9 +10,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "Element.h"
-class Window;
-class Image : public Element {
+#include "Rectangle.h"
+class Image : public Rectangle {
    protected:
     struct ImageInfo {
         SDL_Texture* texture = nullptr;
@@ -20,12 +19,12 @@ class Image : public Element {
         uint32_t original_width = 0;
         uint32_t original_height = 0;
     };
-    SDL_Rect rect = {0, 0, 0, 0};
     ImageInfo* img_info = nullptr;  // information about texture, SDL_Texture , how many references to it
     double angle = 0;
     float cos_a = 1.0f;
     float sin_a = 0.0f;
     Image(int x, int y, SDL_Renderer* ren, SDL_Texture* texture);
+    void Destroy();
 
    public:
     inline Image() { this->img_info = nullptr; };
@@ -50,10 +49,6 @@ class Image : public Element {
         this->cos_a = std::cos(angle);
         this->sin_a = std::sin(angle);
     }
-    inline int GetHeight() const { return this->rect.h; }
-    inline int GetWidth() const { return this->rect.w; }
-    inline int GetX() const { return this->rect.x; }
-    inline int GetY() const { return this->rect.y; }
 
     inline bool Loaded() const {
         if (!img_info) return false;
@@ -66,31 +61,6 @@ class Image : public Element {
         this->rect.h = this->img_info->original_height * ratio;
     }
 
-    inline void SetWidth(int width, bool save_ratio = false) {
-        if (save_ratio) {
-            double ratio = double(width) / rect.w;
-            this->rect.w *= ratio;
-            this->rect.h *= ratio;
-            return;
-        }
-        this->rect.w = width;
-    }
-    inline void SetHeight(int height, bool save_ratio = false) {
-        if (save_ratio) {
-            double ratio = double(height) / rect.h;
-            this->rect.w *= ratio;
-            this->rect.h *= ratio;
-            return;
-        }
-        this->rect.h = height;
-    }
-    inline void SetX(const int x) { this->rect.x = x; }
-    inline void SetY(const int y) { this->rect.y = y; }
-    inline void SetPosition(const int x, const int y) {
-        this->rect.x = x;
-        this->rect.y = y;
-    }
-    inline const SDL_Rect& GetBorders() const { return this->rect; }
     void Draw() override;
     // return true if this element contains point of given coordinates
     Element* ContainPoint(int x, int y) override;
@@ -103,7 +73,7 @@ class Image : public Element {
     // behavior of gui element when when specific key is pressed
     void KeyDown(const Event& event) override;
     // behavior of gui element when when typed
-    ~Image();
+    ~Image() override;
     friend class Font;
 };
 

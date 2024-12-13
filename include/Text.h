@@ -12,6 +12,7 @@
 #include <SDL2/SDL_render.h>
 
 #include <cstdint>
+#include <string>
 
 #include "Element.h"
 #include "Font.h"
@@ -20,17 +21,21 @@
 
 class Text : public Image {
    private:
-    std::string text;
     Font font;
+    std::string text;
 
    public:
     Text() = default;
-    Text(Window* win, int x, int y, const std::string& text, Font& font, const SDL_Color& color = {0, 0, 0, 255});
-    void Init(Window* win, int x, int y, const std::string& text, Font& font, const SDL_Color& color = {0, 0, 0, 255});
-
+    Text(Window* win, int x, int y, const std::string& text, Font& font);
+    void Init(Window* win, int x, int y, const std::string& text, Font& font);
+    void SetText(const ::std::string& text);
+    void inline SetBackGroundColor(const SDL_Color& color) { this->color = color; }
+    void inline SetTextColor(const SDL_Color& text_color) {
+        SDL_SetTextureColorMod(img_info->texture, color.r, color.g, color.b);
+    }
     inline const std::string& GetText() const { return this->text; };
     // overiding virtual functions of Element class
-    ~Text();
+    //~Text() {};
 };
 
 #endif  // !__TEXT__

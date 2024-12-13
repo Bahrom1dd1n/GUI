@@ -13,17 +13,16 @@
 #include "Element.h"
 #include "Font.h"
 #include "Image.h"
+#include "Rectangle.h"
 #include "Text.h"
 #include "Window.h"
 
-class Button : public Element {
+class Button : public Rectangle {
    private:
     const static uint32_t nm_padding = 2;
     const static int dw = 2;
     Text name_text;
     Image img;
-    SDL_Rect rect;
-    SDL_Color col;
     uint8_t clicked = 0;
 
    public:
@@ -35,20 +34,23 @@ class Button : public Element {
               const SDL_Color& color);
     inline const std::string& GetName() const { return this->name_text.GetText(); };
     void Click();
-    inline void SetPosition(int x, int y) {
+    inline void SetX(int x) {
+        name_text.SetX(x + name_text.GetX() - rect.x);
         rect.x = x;
+    }
+    inline void SetY(int y) {
+        name_text.SetY(y + name_text.GetY() - rect.y);
         rect.y = y;
-    };
-    inline void SetX(int x) { rect.x = x; }
-    inline void SetY(int y) { rect.y = y; }
-    inline uint32_t GetWidth() const { return rect.w; }
-    inline uint32_t GetHeight() const { return rect.h; }
+    }
+    inline void SetCenterX(int x) { this->SetX(x - (rect.w >> 1)); }
+    inline void SetCenterY(int y) { this->SetY(y - (rect.h >> 1)); }
     void Draw() override;
     void Focuse() override;
     void Unfocuse() override;
     void MouseDown(const Event& event) override;
     void KeyDown(const Event& event) override;
     Element* ContainPoint(int x, int y) override;
+    inline ~Button() override {};
 };
 
 #endif  // __BUTTON__
