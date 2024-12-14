@@ -160,7 +160,7 @@ void TextField::KeyDown(const Event& event) {
 void TextField::Type(char letter) {
     this->text.insert(cursor_index, 1, letter);
     int lw = this->font.GetLetterWidth(this->text[cursor_index]);
-    if (rect.w - padding >= lw + text_width) {
+    if (text.size() <= max_length && rect.w - padding >= lw + text_width) {
         cursor_x = cursor_x + lw;
         text_width += lw;
     } else {
