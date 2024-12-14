@@ -95,6 +95,7 @@ void Window::OnMouseDown(const SDL_Event& event) {
     Element* elem = nullptr;
     for (auto it = children.rbegin(); it != children.rend(); it++) {
         auto i = *it;
+        if (!i->IsVisible()) continue;
         elem = i->ContainPoint(x, y);
         if (elem) {
             if (this->focused_element != elem) {

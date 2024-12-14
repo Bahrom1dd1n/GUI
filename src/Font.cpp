@@ -38,7 +38,7 @@ Font& Font::operator=(const Font& _font) {
     return *this;
 }
 
-Font::Font(const char* font_path, size_t font_size, const SDL_Color& font_color) {
+Font::Font(const char* font_path, size_t font_size, int style) {
     if (!ttf_init) {
         TTF_Init();
         ttf_init = true;
@@ -48,22 +48,25 @@ Font::Font(const char* font_path, size_t font_size, const SDL_Color& font_color)
         printf("Cannot load font!\n");
         exit(1);
     }
+    TTF_SetFontStyle(font, style);
     this->font_info = new FontData;
     this->font_info->_font = font;
     this->font_info->link_count = 1;
 }
 
-void Font::Init(const char* font_path, size_t font_size, const SDL_Color& font_color) {
+void Font::Init(const char* font_path, size_t font_size, int style) {
     this->Destroy();
     if (!ttf_init) {
         TTF_Init();
         ttf_init = true;
     }
+
     TTF_Font* font = TTF_OpenFont(font_path, font_size);
     if (!font) {
         printf("Cannot load font!\n");
         exit(1);
     }
+    TTF_SetFontStyle(font, style);
     this->font_info = new FontData;
     this->font_info->_font = font;
     this->font_info->link_count = 1;

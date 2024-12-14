@@ -26,8 +26,9 @@ class Text : public Image {
 
    public:
     Text() = default;
-    Text(Window* win, int x, int y, const std::string& text, Font& font);
-    void Init(Window* win, int x, int y, const std::string& text, Font& font);
+    Text(Window* win, int x, int y, const std::string& text, Font& font, const SDL_Color& text_color = {0, 0, 0, 255});
+    void Init(Window* win, int x, int y, const std::string& text, Font& font,
+              const SDL_Color& text_color = {0, 0, 0, 255});
     void SetText(const ::std::string& text);
     void inline SetBackGroundColor(const SDL_Color& color) { this->color = color; }
     void inline SetTextColor(const SDL_Color& text_color) {

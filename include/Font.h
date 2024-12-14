@@ -14,7 +14,12 @@
 
 #include "Image.h"
 #include "Window.h"
-
+enum FontStyle {
+    NORMAL = TTF_STYLE_NORMAL,
+    BOLD = TTF_STYLE_BOLD,
+    UNDERLINE = TTF_STYLE_UNDERLINE,
+    ITALIC = TTF_STYLE_ITALIC,
+};
 class Font {
    private:
     struct FontData {
@@ -43,8 +48,8 @@ class Font {
     Font(Font&& _font) noexcept;
 
     Font& operator=(const Font& _font);
-    Font(const char* font_path, size_t font_size, const SDL_Color& font_color);
-    void Init(const char* font_path, size_t font_size, const SDL_Color& font_color);
+    Font(const char* font_path, size_t font_size, int style = FontStyle::NORMAL);
+    void Init(const char* font_path, size_t font_size, int style = FontStyle::NORMAL);
 
     // retunr height of font
     inline int32_t GetLetterHeight() const { return this->font_info->letter_height; };

@@ -15,6 +15,7 @@ void Rectangle::Init(Window* win, int x, int y, int width, int height, const SDL
     this->color = color;
 }
 void Rectangle::Draw() {
+    if (!this->color.a) return;
     SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(this->renderer, &rect);
 };
