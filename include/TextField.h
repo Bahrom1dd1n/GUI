@@ -23,12 +23,12 @@ class TextField : public Rectangle {
     std::string placeholder;
     SDL_Color color;
     SDL_Color text_color;
-    uint32_t cursor_index = 0;
-    uint32_t max_length = 0;
-    uint32_t start = 0;
-    int cursor_x = 0;
-    char cursor_blink = 0;
-
+    int32_t cursor_index = 0;
+    int32_t max_length = 0;
+    int32_t start = 0;
+    int32_t cursor_x = 0;
+    int16_t text_width = 0;
+    int8_t cursor_blink = 0;
     bool focused = false;
 
     static const uint8_t padding = 4;

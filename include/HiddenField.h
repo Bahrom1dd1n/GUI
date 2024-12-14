@@ -1,5 +1,7 @@
 #ifndef __HIDDENFIELD__
 #define __HIDDENFIELD__
+#include <cstdint>
+
 #include "Element.h"
 #include "Image.h"
 #include "TextField.h"
@@ -7,8 +9,8 @@ class HiddenField : public TextField {
    private:
     static Image global_img;
     Image eye;
-    bool hidden = true;
     SDL_Rect eye_src;
+    bool hidden = true;
 
    public:
     HiddenField() = default;

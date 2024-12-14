@@ -15,7 +15,7 @@
 #include "Element.h"
 #include "Image.h"
 class Window {
-   private:
+   protected:
     SDL_Rect window_rect;
     uint32_t frame_delay = 0;   // stricting frame rate using delay in main loop
     uint32_t time_elapsed = 0;  // last time interval taken in main loop
@@ -29,8 +29,6 @@ class Window {
     Element* hovered_element = nullptr;      // element which mouse is moving over
     Image bg_img;
 
-    std::function<void(int x, int y)> mousedown_callback;
-    std::function<void(uint32_t key)> keydown_callback;
     bool running = false;  // condition of main loop of Window
     void OnMouseDown(const Event& event);
 
@@ -39,6 +37,10 @@ class Window {
     void OnKeyDown(const Event& event);
 
    public:
+    std::function<void(int x, int y)> mousedown_callback;
+    std::function<void(uint32_t key)> keydown_callback;
+    std::function<void()> draw_frame_callback;
+
     Window(uint32_t x, uint32_t y, uint32_t window_width, uint32_t window_height, const std::string& title,
            const SDL_Color& background_cl = {255, 255, 255, 255}, uint32_t max_fps = 0, int flags = SDL_WINDOW_SHOWN);
 

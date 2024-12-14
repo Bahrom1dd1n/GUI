@@ -1,12 +1,13 @@
 #include "Font.h"
 
 #include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_ttf.h>
 #include <strings.h>
 
-#include <cstdint>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -14,7 +15,7 @@
 #include "Image.h"
 
 bool Font::ttf_init = false;
-
+int length_of_all = 0;
 Font::Font(const Font& t) {
     if (!t.font_info) return;
     this->font_info = t.font_info;
@@ -102,25 +103,27 @@ Image Font::ConvertToImage(SDL_Renderer* ren, int x, int y, const std::string& t
     return Image(x, y, ren, texture);
 }
 void Font::LoadFontTextures(SDL_Renderer* ren) {
-    if (!this->font_info) return;
+    if (this->font_info->texture) return;
     SDL_Color color = {255, 255, 255, 255};
     TTF_Font* font = this->font_info->_font;
-    char all_letters[97];
+    char all_letters[97] = {0};
     int offset = 0;
+
     for (int i = 32; i < 127; i++) {
         all_letters[i - 32] = char(i);
         int h, w = 0;
         char letter[] = {char(i), '\0'};
-        TTF_SizeText(font, letter, &w, &h);
-        font_info->letter_width[i - 32] = w;
-        if (w > font_info->max_letter_width) font_info->max_letter_width = w;
+        TTF_SizeText(font, all_letters, &w, &h);
+        font_info->letter_width[i - 32] = w - offset;
         font_info->letters[i - 32] = offset;
-        offset += w;
+        offset = w;
     }
+    // font_info->letters[0] = 0;
     SDL_Surface* surf = TTF_RenderText_Blended(font, all_letters, color);
     font_info->texture = SDL_CreateTextureFromSurface(ren, surf);
     font_info->letter_height = surf->h;
     SDL_SetTextureBlendMode(font_info->texture, SDL_BLENDMODE_BLEND);
+    length_of_all = surf->w;
     SDL_FreeSurface(surf);
 }
 inline void Font::Destroy() {

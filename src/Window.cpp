@@ -74,7 +74,7 @@ void Window::Start() {
         for (auto i : children) {
             if (i->IsVisible()) i->Draw();
         }
-
+        if (draw_frame_callback) draw_frame_callback();
         SDL_RenderPresent(main_ren);
         this->current_time = SDL_GetTicks();
         uint32_t time_elapsed = this->current_time - start;

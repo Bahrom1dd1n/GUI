@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Image.h"
+#include "Window.h"
 
 class Font {
    private:
@@ -23,7 +24,6 @@ class Font {
         int letters[num_letters] = {0};
         int16_t letter_width[num_letters] = {0};
         int16_t letter_height = 0;
-        int16_t max_letter_width = 0;
         int16_t link_count = 0;
     };
     FontData* font_info = nullptr;

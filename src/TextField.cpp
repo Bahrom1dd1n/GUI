@@ -8,12 +8,13 @@
 
 #include "Element.h"
 
-TextField::TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_col,
-                     const SDL_Color& txt_col)
-    : font(font), color(bg_col), text_color(txt_col) {
+TextField::TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& color,
+                     const SDL_Color& text_color)
+    : font(font), color(color), text_color(text_color) {
     this->renderer = win->main_ren;
+    this->text_color = text_color;
     font.LoadFontTextures(win->main_ren);
-    int width = font.font_info->max_letter_width * length + 2 * padding;
+    int width = font.GetLetterWidth('A') * length + 2 * padding;
     int height = font.GetLetterHeight() + 2 * padding;
     this->rect = {x, y, width, height};
     this->max_length = length;
@@ -26,7 +27,7 @@ void TextField::Init(Window* win, int x, int y, uint32_t length, Font& font, con
     this->color = color;
     this->text_color = text_color;
     font.LoadFontTextures(win->main_ren);
-    int width = font.font_info->max_letter_width * length + 2 * padding;
+    int width = font.GetLetterWidth('A') * length + 2 * padding;
     int height = font.GetLetterHeight() + 2 * padding;
     this->rect = {x, y, width, height};
     this->max_length = length;
@@ -37,16 +38,16 @@ void TextField::Draw() {
     SDL_SetRenderDrawColor(this->renderer, 255 - color.b, 255 - color.r, 255 - color.g, 255);
     SDL_RenderDrawRect(this->renderer, &this->rect);
     if (this->text.size()) {
-        uint32_t length = text.size() - start;
+        int32_t length = text.size() - start;
         if (length > max_length) length = max_length;
-        this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start, length,
-                            text_color);
+        text_width = this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, text.c_str() + start,
+                                         length, text_color);
     } else {
         if (!this->focused) {
             uint8_t temp = text_color.a;
-            text_color.a = 20;
-            this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding, placeholder.c_str() + start,
-                                placeholder.size(), text_color);
+            text_color.a = 100;
+            text_width = this->font.DrawText(this->renderer, rect.x + padding, rect.y + padding,
+                                             placeholder.c_str() + start, placeholder.size(), text_color);
             text_color.a = temp;
         }
     }
@@ -116,7 +117,9 @@ void TextField::KeyDown(const Event& event) {
                 if (start) {
                     this->start--;
                 } else {
-                    cursor_x -= this->font.GetLetterWidth(this->text[cursor_index]);
+                    int temp_width = this->font.GetLetterWidth(this->text[cursor_index]);
+                    cursor_x -= temp_width;
+                    text_width -= temp_width;
                 }
                 this->text.erase(cursor_index, 1);
             }
@@ -156,8 +159,10 @@ void TextField::KeyDown(const Event& event) {
 // behavior of gui element when when typed
 void TextField::Type(char letter) {
     this->text.insert(cursor_index, 1, letter);
-    if (cursor_x < rect.w - 2 * padding) {
-        cursor_x = cursor_x + this->font.GetLetterWidth(this->text[cursor_index]);
+    int lw = this->font.GetLetterWidth(this->text[cursor_index]);
+    if (rect.w - padding >= lw + text_width) {
+        cursor_x = cursor_x + lw;
+        text_width += lw;
     } else {
         start++;
     }

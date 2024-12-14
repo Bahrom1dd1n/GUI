@@ -2,6 +2,7 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 
 #include <cstdio>
@@ -46,7 +47,8 @@ class MyWin : public Window {
         int center = rect_frame->GetX() + rect_frame->GetWidth() / 2;
         txt->SetX(center - txt->GetWidth() / 2);
         field->SetX(center - field->GetWidth() / 2);
-        field->SetPlaceholder("Name");
+        field->SetPlaceholder("username");
+        password->SetPlaceholder("password");
         password->SetX(center - password->GetWidth() / 2);
         but->click_callback = [this](int x, int y) { this->Print(); };
         bg_images.resize(3);
