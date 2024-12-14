@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "Button.h"
@@ -26,6 +27,7 @@ class MyWin : public Window {
    private:
     Frame login_page;
     Frame reg_page;
+    Frame reg2_page;
     Font font;
     Font header1;
     std::vector<Image> bg_images;
@@ -45,20 +47,23 @@ class MyWin : public Window {
         this->SetBackground(bg_images[0]);
         this->InitLoginPage();
         this->InitRegPage();
+        this->InitReg2Page();
         login_page.SetVisible(true);
         reg_page.SetVisible(false);
+        reg2_page.SetVisible(false);
         this->Add(&login_page);
         this->Add(&reg_page);
+        this->Add(&reg2_page);
     }
     void InitLoginPage() {
-        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 500, {20, 20, 230, 255});
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 350, {20, 20, 230, 255});
         rect_frame->SetCenterY(this->GetHeight() >> 1);
         Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Log In", header1, {255, 255, 255, 255});
-        TextField* field = new TextField(this, 0, txt->GetY() + txt->GetHeight() + 30, 20, font, {255, 255, 255, 255});
+        TextField* field = new TextField(this, 0, txt->GetY() + txt->GetHeight() + 50, 20, font, {255, 255, 255, 255});
         HiddenField* password =
             new HiddenField(this, 0, field->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
-        Button* but = new Button(this, this->GetWidth() / 2 - 50, password->GetY() + password->GetHeight() + 50, 100,
-                                 30, "Log In", font, {200, 20, 20, 255});
+        Button* but = new Button(this, 0, rect_frame->GetY() + rect_frame->GetHeight() - 60, 100, 30, "Next", font,
+                                 {200, 20, 20, 255});
         int center = this->GetWidth() >> 1;
         rect_frame->SetCenterX(center);
         txt->SetCenterX(center);
@@ -68,7 +73,7 @@ class MyWin : public Window {
 
         password->SetPlaceholder("password");
         password->SetCenterX(center);
-
+        but->SetCenterX(center);
         but->click_callback = [this](int x, int y) {
             login_page.SetVisible(false);
             reg_page.SetVisible(true);
@@ -82,17 +87,17 @@ class MyWin : public Window {
         login_page.Add(password);
     }
     void InitRegPage() {
-        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 500, {20, 20, 230, 255});
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 350, {20, 20, 230, 255});
         rect_frame->SetCenterY(this->GetHeight() >> 1);
         Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Register", header1, {255, 255, 255, 255});
-        TextField* field = new TextField(this, 0, txt->GetY() + txt->GetHeight() + 30, 20, font, {255, 255, 255, 255});
+        TextField* field = new TextField(this, 0, txt->GetY() + txt->GetHeight() + 50, 20, font, {255, 255, 255, 255});
         HiddenField* password =
             new HiddenField(this, 0, field->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
         HiddenField* password2 =
-            new HiddenField(this, 0, password->GetCenterY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
+            new HiddenField(this, 0, password->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
 
-        Button* but = new Button(this, 0, password2->GetCenterY() + password2->GetHeight() + 50, 100, 30, "Save", font,
-                                 {200, 20, 200, 255});
+        Button* but = new Button(this, 0, rect_frame->GetY() + rect_frame->GetHeight() - 60, 100, 30, "Next", font,
+                                 {200, 20, 20, 255});
 
         int center = this->GetWidth() >> 1;
         rect_frame->SetCenterX(center);
@@ -108,9 +113,9 @@ class MyWin : public Window {
         password2->SetPlaceholder("Renter password");
         but->SetCenterX(center);
         but->click_callback = [this](int x, int y) {
-            login_page.SetVisible(true);
+            reg2_page.SetVisible(true);
             reg_page.SetVisible(false);
-            this->SetBackground(bg_images[0]);
+            this->SetBackground(bg_images[2]);
         };
 
         // but.OnClick = MyWin::Print();
@@ -121,11 +126,44 @@ class MyWin : public Window {
         reg_page.Add(password2);
         reg_page.Add(but);
     }
+    void InitReg2Page() {
+        int center = this->GetWidth() >> 1;
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 450, {20, 20, 230, 255});
+        rect_frame->SetCenterY(this->GetHeight() >> 1);
+        rect_frame->SetCenterX(center);
+        reg2_page.Add(rect_frame);
 
+        Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Personal Info", header1, {255, 255, 255, 255});
+        txt->SetCenterX(center);
+
+        TextField* field = (TextField*)txt;
+        std::string placehoders[] = {"Emter full name",    "Enter plate number", "Enter vehicle type",
+                                     "Enter your address", "Enter phone number", "Enter email addres"};
+        for (int i = 0; i < 6; i++) {
+            field = new TextField(this, 0, field->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
+            field->SetCenterX(center);
+            field->SetPlaceholder(placehoders[i]);
+            reg2_page.Add(field);
+        }
+
+        Button* but =
+            new Button(this, 0, field->GetY() + field->GetHeight() + 30, 100, 30, "Save", font, {200, 20, 20, 255});
+        but->SetCenterX(center);
+        but->click_callback = [this](int x, int y) {
+            login_page.SetVisible(true);
+            reg2_page.SetVisible(false);
+            this->SetBackground(bg_images[0]);
+        };
+
+        // but.OnClick = MyWin::Print();
+        reg2_page.Add(txt);
+        reg2_page.Add(but);
+    }
     ~MyWin() {
         for (auto i : login_page.GetChildren()) delete i;
 
         for (auto i : reg_page.GetChildren()) delete i;
+        for (auto i : reg2_page.GetChildren()) delete i;
     }
 };
 int main(int argc, char* args[]) {
