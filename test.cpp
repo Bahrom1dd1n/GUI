@@ -128,7 +128,7 @@ class MyWin : public Window {
     }
     void InitReg2Page() {
         int center = this->GetWidth() >> 1;
-        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 450, {20, 20, 230, 255});
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 400, 450, {20, 20, 230, 255});
         rect_frame->SetCenterY(this->GetHeight() >> 1);
         rect_frame->SetCenterX(center);
         reg2_page.Add(rect_frame);
@@ -140,7 +140,7 @@ class MyWin : public Window {
         std::string placehoders[] = {"Emter full name",    "Enter plate number", "Enter vehicle type",
                                      "Enter your address", "Enter phone number", "Enter email addres"};
         for (int i = 0; i < 6; i++) {
-            field = new TextField(this, 0, field->GetY() + field->GetHeight() + 20, 20, font, {255, 255, 255, 255});
+            field = new TextField(this, 0, field->GetY() + field->GetHeight() + 20, 30, font, {255, 255, 255, 255});
             field->SetCenterX(center);
             field->SetPlaceholder(placehoders[i]);
             reg2_page.Add(field);
