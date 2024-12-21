@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Button.h"
+#include "Canvas.h"
 #include "Font.h"
 #include "Frame.h"
 #include "HiddenField.h"
@@ -28,6 +29,7 @@ class MyWin : public Window {
     Frame login_page;
     Frame reg_page;
     Frame reg2_page;
+    Frame floors_page;
     Font font;
     Font header1;
     std::vector<Image> bg_images;
@@ -158,6 +160,14 @@ class MyWin : public Window {
         // but.OnClick = MyWin::Print();
         reg2_page.Add(txt);
         reg2_page.Add(but);
+    }
+    void InitFloors() {
+        Canvas* canvas = new Canvas(this, 20, 20, 300, 200);
+        canvas->Clear();
+        canvas->SetBorderWidth(5);
+        canvas->SetBorderColor({0, 0, 0, 255});
+
+        floors_page.Add(canvas);
     }
     ~MyWin() {
         for (auto i : login_page.GetChildren()) delete i;

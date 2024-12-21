@@ -62,6 +62,7 @@ class Window {
     friend class TextField;
     friend class HiddenField;
     friend class Rectangle;
+    friend class Canvas;
 };
 
 #endif  //!__WINDOW__
