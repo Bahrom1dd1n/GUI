@@ -9,6 +9,7 @@
 #include <string>
 
 #include "Element.h"
+#include "Font.h"
 #include "Image.h"
 #include "Rectangle.h"
 class Window;
@@ -25,9 +26,10 @@ class Canvas : public Rectangle {
     void Clear(const SDL_Color& color = {255, 255, 255, 255});
     void Draw() override;
     void DrawLine(int x, int y, int x2, int y2, const SDL_Color& color);
-    void DrawImage(int x, int y, const Image& img);
     void FillRectangle(int x, int y, int w, int h, const SDL_Color& color);
-
     void DrawRectangle(int x, int y, int w, int h, int border_width, const SDL_Color& border_color);
+    void DrawImage(int x, int y, const Image& img);
+    void DrawText(int x, int y, const char* text, uint32_t length, Font& font, const SDL_Color& color = {0, 0, 0, 255});
+    ~Canvas() { SDL_DestroyTexture(this->texture); }
 };
 #endif  //!__CANVAS__

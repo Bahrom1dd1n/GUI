@@ -42,8 +42,10 @@ class Button : public Rectangle {
         name_text.SetY(y + name_text.GetY() - rect.y);
         rect.y = y;
     }
+
     inline void SetCenterX(int x) { this->SetX(x - (rect.w >> 1)); }
     inline void SetCenterY(int y) { this->SetY(y - (rect.h >> 1)); }
+    inline void SetTextColor(const SDL_Color& color) { this->name_text.SetTextColor(color); }
     void Draw() override;
     void Focuse() override;
     void Unfocuse() override;

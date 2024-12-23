@@ -58,7 +58,11 @@ class Font {
         if (letter < 32 || letter > 126) return 0;
         return this->font_info->letter_width[letter - 32];
     };
-
+    inline SDL_Point GetTextDimensions(char* text) {
+        int w = 0, h = 0;
+        TTF_SizeText(font_info->_font, text, &w, &h);
+        return {w, h};
+    }
     // DrawText return width of Drawn text , if win is specified it draw text to that window
     // unless it will draw it to it's parent window
     ~Font();
@@ -66,6 +70,7 @@ class Font {
     friend class TextField;
     friend class Text;
     friend class HiddenField;
+    friend class Canvas;
 };
 
 #endif  //! __FONT__

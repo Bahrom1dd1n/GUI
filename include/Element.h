@@ -14,6 +14,8 @@ class Element {
     bool visible = true;
 
    public:
+    void* extra_info = nullptr;  // pointer to extra information related to button can be pointed
+
     inline bool IsVisible() const { return this->visible; };
     inline void SetVisible(bool visible) { this->visible = visible; };
     // drawing gui element on to the parent window

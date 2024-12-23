@@ -30,7 +30,7 @@ class TextField : public Rectangle {
     int16_t text_width = 0;
     int8_t cursor_blink = 0;
     bool focused = false;
-
+    bool numeric = false;  // if true then textfiled only takes numeric values
     static const uint8_t padding = 4;
 
    public:

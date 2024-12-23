@@ -158,6 +158,8 @@ void TextField::KeyDown(const Event& event) {
 };
 // behavior of gui element when when typed
 void TextField::Type(char letter) {
+    if (this->numeric && (letter < '0' || letter > '9')) return;
+
     this->text.insert(cursor_index, 1, letter);
     int lw = this->font.GetLetterWidth(this->text[cursor_index]);
     if (text.size() <= max_length && rect.w - padding >= lw + text_width) {
