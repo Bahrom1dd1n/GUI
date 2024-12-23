@@ -31,15 +31,44 @@ const int windowHeight = 600;
 
 class MyWin : public Window {
    private:
-    Frame login_page;
-    Frame reg_page;
-    Frame reg2_page;
-    Frame floors_page;
-    Frame pay_page;
-    Chart chart;
+    std::vector<Image> bg_images;  // background images
+    Frame login_page;              // login page
+    Frame reg_page;                //
+    Frame reg2_page;               //
+    Frame floors_page;             // page of floors and
+    Frame pay_page;                // payment page
+    Frame paydetail_page;
+    Frame checkout_page;
+
     Font font;
     Font header1;
-    std::vector<Image> bg_images;
+    Font header2;
+    Image ret_img;
+    // information about selected slot and building
+    // elemensts of login page
+    struct {
+        TextField* username = nullptr;
+        HiddenField* password = nullptr;
+    } login_var;
+
+    // elements of register page
+    struct {
+        TextField* username = nullptr;
+        HiddenField* password = nullptr;
+        TextField* name = nullptr;
+        TextField* plate_num = nullptr;
+        TextField* vehicle_type = nullptr;
+        TextField* addres = nullptr;
+        TextField* phone_number = nullptr;
+        TextField* email = nullptr;
+    } reg_var;
+    struct {
+        Canvas* canvas = nullptr;
+        Chart chart;                                           // map of the building
+        int floor_level = 0, block_index = 0, slot_index = 0;  // index of selected
+        int current_fl_level;                                  // level of current flor level
+        bool slot_selected = false;                            // slot selected or not
+    } floor_var;
 
    public:
     MyWin(int x, int y, int width, int height, const std::string& title, const SDL_Color& col)
@@ -47,7 +76,10 @@ class MyWin : public Window {
                  SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS) {
         this->font.Init("./Font2.ttf", 18, FontStyle::NORMAL);
         this->header1.Init("./Font2.ttf", 25, FontStyle::BOLD);
+        this->header2.Init("./Font2.ttf", 20, FontStyle::BOLD);
+        ret_img.Init(this, 0, 0, "./assets/images/return.png");
         bg_images.resize(4);
+
         for (int i = 0; i < bg_images.size(); i++) {
             char location[50];
             snprintf(location, sizeof(location), "./assets/images/bg_images/bg%d.jpg", i + 1);
@@ -59,11 +91,15 @@ class MyWin : public Window {
         this->InitReg2Page();
         this->InitFloors();
         this->InitPayPage();
+        this->InitPayDetailsPage();
+        this->InitCheckoutPage();
         login_page.SetVisible(true);
         reg_page.SetVisible(false);
         reg2_page.SetVisible(false);
         pay_page.SetVisible(false);
         floors_page.SetVisible(false);
+        checkout_page.SetVisible(false);
+        paydetail_page.SetVisible(false);
     }
     void InitLoginPage() {
         Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 350, {20, 20, 230, 255});
@@ -84,6 +120,7 @@ class MyWin : public Window {
         password->SetPlaceholder("password");
         password->SetCenterX(center);
         but->SetCenterX(center);
+
         but->click_callback = [this](int x, int y) {
             login_page.SetVisible(false);
             reg_page.SetVisible(true);
@@ -95,6 +132,8 @@ class MyWin : public Window {
         login_page.Add(but);
         login_page.Add(field);
         login_page.Add(password);
+        login_var.password = password;
+        login_var.username = field;
 
         this->Add(&login_page);
     }
@@ -130,13 +169,24 @@ class MyWin : public Window {
             this->SetBackground(bg_images[2]);
         };
 
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            login_page.SetVisible(true);
+            reg_page.SetVisible(false);
+            this->SetBackground(bg_images[0]);
+        };
+
         // but.OnClick = MyWin::Print();
+        reg_page.Add(ret);
         reg_page.Add(rect_frame);
         reg_page.Add(txt);
         reg_page.Add(field);
         reg_page.Add(password);
         reg_page.Add(password2);
         reg_page.Add(but);
+
+        reg_var.username = field;
+        reg_var.password = password;
 
         this->Add(&reg_page);
     }
@@ -151,15 +201,17 @@ class MyWin : public Window {
         txt->SetCenterX(center);
 
         TextField* field = (TextField*)txt;
-        std::string placehoders[] = {"Emter full name",    "Enter plate number", "Enter vehicle type",
+        std::string placehoders[] = {"Enter full name",    "Enter plate number", "Enter vehicle type",
                                      "Enter your address", "Enter phone number", "Enter email addres"};
+        TextField** fields[] = {&reg_var.name,   &reg_var.plate_num,    &reg_var.vehicle_type,
+                                &reg_var.addres, &reg_var.phone_number, &reg_var.email};
         for (int i = 0; i < 6; i++) {
             field = new TextField(this, 0, field->GetY() + field->GetHeight() + 20, 30, font, {255, 255, 255, 255});
             field->SetCenterX(center);
             field->SetPlaceholder(placehoders[i]);
+            *fields[i] = field;
             reg2_page.Add(field);
         }
-
         Button* but =
             new Button(this, 0, field->GetY() + field->GetHeight() + 30, 100, 30, "Save", font, {200, 20, 20, 255});
         but->SetCenterX(center);
@@ -169,49 +221,76 @@ class MyWin : public Window {
             this->SetBackground(bg_images[3]);
         };
 
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            reg2_page.SetVisible(false);
+            reg_page.SetVisible(true);
+            this->SetBackground(bg_images[1]);
+        };
         // but.OnClick = MyWin::Print();
+        reg2_page.Add(ret);
         reg2_page.Add(txt);
         reg2_page.Add(but);
 
         this->Add(&reg2_page);
     }
+
     void InitFloors() {
-        chart.Load("chart.dat");
-        Canvas* canvas = MakeCanvas(this->GetWidth() - 200, this->GetHeight(), chart);
+        floor_var.chart.Load("chart.dat");
+        Canvas* canvas = MakeCanvas(this->GetWidth() - 200, this->GetHeight(), floor_var.chart);
         if ((this->GetWidth() - canvas->GetWidth()) >> 1 > 200)
             canvas->SetCenterX(this->GetCenterX());
         else
             canvas->SetX(this->GetWidth() - canvas->GetWidth());
         canvas->SetCenterY(this->GetCenterY());
-        DrawChart(canvas, chart, 0);
+        DrawChart(canvas, floor_var.chart, 0);
         canvas->SetBorderWidth(8);
         canvas->SetBorderColor({10, 100, 100, 255});
-        for (int i = 0, y = (this->GetHeight() - chart.floors.size() * 100 + 50) >> 1; i < chart.floors.size();
-             i++, y += 100) {
+        for (int i = 0, y = (this->GetHeight() - floor_var.chart.floors.size() * 100 + 50) >> 1;
+             i < floor_var.chart.floors.size(); i++, y += 100) {
             char name[10] = {0};
             snprintf(name, 10, "Level %d", i + 1);
             Button* but = new Button(this, 25, y, 150, 50, name, font, {255, 165, 0, 255});
-            but->click_callback = [this, i, canvas](int, int) { DrawChart(canvas, chart, i); };
+            but->click_callback = [this, i, canvas](int, int) { DrawChart(canvas, floor_var.chart, i); };
 
             floors_page.Add(but);
         };
         Button* choose = new Button(this, 25, this->GetHeight() - 70, 120, 50, "Select", font, {220, 20, 20, 255});
         choose->click_callback = [this](int x, int y) {
             floors_page.SetVisible(false);
-            pay_page.SetVisible(true);
+            paydetail_page.SetVisible(true);
             this->SetBackground(bg_images[3]);
         };
+
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            reg2_page.SetVisible(true);
+            floors_page.SetVisible(false);
+            this->SetBackground(bg_images[2]);
+        };
+        floors_page.Add(ret);
         floors_page.Add(choose);
         floors_page.Add(canvas);
         this->Add(&floors_page);
     }
+
+    void SelectSlot(int x, int y, Canvas*) {}
+
     void InitPayPage() {
         Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 350, {20, 20, 230, 255});
         rect_frame->SetCenterY(this->GetHeight() >> 1);
         Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Payment Details", header1, {255, 255, 255, 255});
         HiddenField* card_num =
             new HiddenField(this, 0, txt->GetY() + txt->GetHeight() + 20, 16, font, {255, 255, 255, 255});
-
+        card_num->SetPlaceholder("Enter Card number");
+        card_num->SetMaxTextLength(16);
+        TextField* exp_date =
+            new TextField(this, 0, card_num->GetY() + card_num->GetHeight() + 30, 5, font, {255, 255, 255, 255});
+        exp_date->SetPlaceholder("mm/yy");
+        TextField* cvv =
+            new TextField(this, 0, card_num->GetY() + card_num->GetHeight() + 30, 3, font, {255, 255, 255, 255});
+        cvv->SetPlaceholder("cvv");
+        cvv->SetMaxTextLength(3);
         Button* but = new Button(this, 0, rect_frame->GetY() + rect_frame->GetHeight() - 60, 100, 30, "Pay", font,
                                  {200, 20, 20, 255});
 
@@ -220,20 +299,164 @@ class MyWin : public Window {
         txt->SetCenterX(center);
 
         card_num->SetCenterX(center);
+        exp_date->SetX(card_num->GetX());
+        cvv->SetX(card_num->GetX() + card_num->GetWidth() - cvv->GetWidth());
         card_num->SetPlaceholder("Enter card number");
         but->SetCenterX(center);
+
         but->click_callback = [this](int x, int y) {
             pay_page.SetVisible(false);
-            login_page.SetVisible(true);
+            checkout_page.SetVisible(true);
             this->SetBackground(bg_images[0]);
         };
 
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            pay_page.SetVisible(false);
+            paydetail_page.SetVisible(true);
+            this->SetBackground(bg_images[3]);
+        };
+
         // but.OnClick = MyWin::Print();
+        pay_page.Add(ret);
         pay_page.Add(rect_frame);
         pay_page.Add(txt);
         pay_page.Add(card_num);
         pay_page.Add(but);
+        pay_page.Add(exp_date);
+        pay_page.Add(cvv);
         this->Add(&pay_page);
+    }
+    void InitPayDetailsPage() {
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 450, {20, 20, 230, 255});
+        rect_frame->SetCenterX(this->GetCenterX());
+        rect_frame->SetCenterY(this->GetHeight() >> 1);
+        paydetail_page.Add(rect_frame);
+        // drawing "Payment details text"
+        Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Payment Details", header1, {255, 255, 255, 255});
+        txt->SetCenterX(rect_frame->GetCenterX());
+        paydetail_page.Add(txt);
+        // drawing time spent
+        txt = new Text(this, 0, txt->GetY() + txt->GetHeight() + 20, "Time spent details", font, {255, 255, 255, 255});
+        Text* time_details = new Text(this, 0, txt->GetY() + txt->GetHeight() + 10, "1:12:20", font);
+        Rectangle* rect = new Rectangle(this, 0, time_details->GetY() - 8, rect_frame->GetWidth() - 40,
+                                        time_details->GetHeight() + 16, {255, 255, 255, 255});
+        rect->SetCenterX(rect_frame->GetCenterX());
+        time_details->SetCenterX(rect_frame->GetCenterX());
+        txt->SetCenterX(rect_frame->GetCenterX());
+        paydetail_page.Add(rect);
+        paydetail_page.Add(txt);
+        // drawing floor details
+        txt = new Text(this, 0, rect->GetY() + rect->GetHeight() + 20, "Floor details", font, {255, 255, 255, 255});
+        Text* floor_details = new Text(this, 0, txt->GetY() + txt->GetHeight() + 10, "floor 1, index 24", font);
+        rect = new Rectangle(this, 0, floor_details->GetY() - 8, rect_frame->GetWidth() - 40,
+                             floor_details->GetHeight() + 16, {255, 255, 255, 255});
+        rect->SetCenterX(rect_frame->GetCenterX());
+        floor_details->SetCenterX(rect_frame->GetCenterX());
+        txt->SetCenterX(rect_frame->GetCenterX());
+        paydetail_page.Add(rect);
+        paydetail_page.Add(txt);
+        // drawing pay amount
+        txt = new Text(this, 0, rect->GetY() + rect->GetHeight() + 20, "Payment amount", font, {255, 255, 255, 255});
+        Text* payment = new Text(this, 0, txt->GetY() + txt->GetHeight() + 10, "$200", font);
+        rect = new Rectangle(this, 0, payment->GetY() - 8, rect_frame->GetWidth() - 40, payment->GetHeight() + 16,
+                             {255, 255, 255, 255});
+        rect->SetCenterX(rect_frame->GetCenterX());
+        payment->SetCenterX(rect_frame->GetCenterX());
+        txt->SetCenterX(rect_frame->GetCenterX());
+        paydetail_page.Add(rect);
+        paydetail_page.Add(txt);
+
+        Button* but = new Button(this, 0, rect_frame->GetY() + rect_frame->GetHeight() - 60, 100, 30, "Continue", font,
+                                 {200, 20, 20, 255});
+        but->SetCenterX(rect_frame->GetCenterX());
+        paydetail_page.Add(but);
+
+        but->click_callback = [this](int x, int y) {
+            paydetail_page.SetVisible(false);
+            pay_page.SetVisible(true);
+            this->SetBackground(bg_images[3]);
+        };
+
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            floors_page.SetVisible(true);
+            paydetail_page.SetVisible(false);
+            this->SetBackground(bg_images[3]);
+        };
+
+        // but.OnClick = MyWin::Print();
+        paydetail_page.Add(ret);
+        paydetail_page.Add(time_details);
+        paydetail_page.Add(floor_details);
+        paydetail_page.Add(payment);
+        this->Add(&paydetail_page);
+    }
+    void InitCheckoutPage() {
+        Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 450, {20, 20, 230, 255});
+        rect_frame->SetCenterX(this->GetCenterX());
+        rect_frame->SetCenterY(this->GetHeight() >> 1);
+        checkout_page.Add(rect_frame);
+        // drawing "Payment details text"
+        Text* txt = new Text(this, 0, rect_frame->GetY() + 30, "Checkout", header1, {255, 255, 255, 255});
+        txt->SetCenterX(rect_frame->GetCenterX());
+        checkout_page.Add(txt);
+
+        txt = new Text(this, rect_frame->GetX() + 20, txt->GetY() + txt->GetHeight() + 20, "Payment method", header2,
+                       {255, 255, 255, 255});
+        checkout_page.Add(txt);
+        txt = new Text(this, rect_frame->GetX() + 20, txt->GetY() + txt->GetHeight() + 20, "Visa", font);
+        checkout_page.Add(txt);
+        Text* card_num =
+            new Text(this, rect_frame->GetX() + 20, txt->GetY() + txt->GetHeight() + 10, "**** **** **** 1234", font);
+        Rectangle* rect = new Rectangle(this, rect_frame->GetX() + 5, txt->GetY() - 8, card_num->GetWidth() + 10,
+                                        card_num->GetHeight() + txt->GetHeight() + 15, {255, 255, 255, 255});
+        checkout_page.Add(rect);
+        rect->SetX(card_num->GetX() - 5);
+        checkout_page.Add(txt);
+
+        // drawing time spent
+        txt = new Text(this, rect_frame->GetX() + 20, rect->GetY() + rect->GetHeight() + 20, "Payment", header2,
+                       {255, 255, 255, 255});
+        checkout_page.Add(txt);
+        txt = new Text(this, rect_frame->GetX() + 30, txt->GetY() + txt->GetHeight() + 20, "Time spent", font,
+                       {255, 255, 255, 255});
+        checkout_page.Add(txt);
+        Text* time_details = new Text(this, 0, txt->GetY(), "1:12:20", font);
+        time_details->SetX(rect_frame->GetX() + rect_frame->GetWidth() - time_details->GetWidth() - 20);
+        rect = new Rectangle(this, 0, time_details->GetY() - 8, rect_frame->GetWidth() - 40,
+                             time_details->GetHeight() + 16, {255, 255, 255, 255});
+
+        // drawing paymand amount
+        txt = new Text(this, rect_frame->GetX() + 20, rect->GetY() + rect->GetHeight() + 20, "Payment amount", font,
+                       {255, 255, 255, 255});
+        checkout_page.Add(txt);
+        Text* payment = new Text(this, time_details->GetX(), txt->GetY(), "$200", font);
+
+        Button* but = new Button(this, 0, rect_frame->GetY() + rect_frame->GetHeight() - 60, 100, 30, "Checkout", font,
+                                 {200, 20, 20, 255});
+        but->SetCenterX(rect_frame->GetCenterX());
+        checkout_page.Add(but);
+
+        but->click_callback = [this](int x, int y) {
+            checkout_page.SetVisible(false);
+            floors_page.SetVisible(true);
+            this->SetBackground(bg_images[3]);
+        };
+
+        Button* ret = new Button(this, 10, 10, 40, 30, ret_img);
+        ret->click_callback = [&](int, int) {
+            checkout_page.SetVisible(false);
+            floors_page.SetVisible(true);
+            this->SetBackground(bg_images[1]);
+        };
+
+        // but.OnClick = MyWin::Print();
+        checkout_page.Add(ret);
+        checkout_page.Add(card_num);
+        checkout_page.Add(time_details);
+        checkout_page.Add(payment);
+        this->Add(&checkout_page);
     }
     Canvas* MakeCanvas(int max_width, int max_height, Chart& chart) {
         uint16_t cell_x = max_width / chart.width;

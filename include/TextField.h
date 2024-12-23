@@ -27,10 +27,12 @@ class TextField : public Rectangle {
     int32_t max_length = 0;
     int32_t start = 0;
     int32_t cursor_x = 0;
+    int32_t max_text_length = 1000;
     int16_t text_width = 0;
     int8_t cursor_blink = 0;
     bool focused = false;
     bool numeric = false;  // if true then textfiled only takes numeric values
+    bool editable = true;
     static const uint8_t padding = 4;
 
    public:
@@ -40,11 +42,13 @@ class TextField : public Rectangle {
 
     TextField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255},
               const SDL_Color& text_color = {0, 0, 0, 255});
-
     void Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color = {255, 255, 255, 255},
               const SDL_Color& text_color = {0, 0, 0, 255});
     inline const std::string& GetText() const { return this->text; }
-    void SetPlaceholder(const std::string& text) { this->placeholder.assign(text); }
+    inline void SetMaxTextLength(int max_text_length) { this->max_text_length = max_text_length; }
+    inline void SetPlaceholder(const std::string& text) { this->placeholder.assign(text); }
+    inline void SetNumeric(bool numeric) { this->numeric = numeric; }
+    inline void SetEditable(bool editable) { this->editable = editable; }
     void Type(char);
 
     void Draw() override;

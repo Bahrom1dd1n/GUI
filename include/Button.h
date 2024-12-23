@@ -28,6 +28,8 @@ class Button : public Rectangle {
    public:
     std::function<void(int, int)> click_callback;
     Button() {};
+    Button(Window* win, int x, int y, int width, int height, Image& img);
+
     Button(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
            const SDL_Color& color);
     void Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
@@ -46,6 +48,7 @@ class Button : public Rectangle {
     inline void SetCenterX(int x) { this->SetX(x - (rect.w >> 1)); }
     inline void SetCenterY(int y) { this->SetY(y - (rect.h >> 1)); }
     inline void SetTextColor(const SDL_Color& color) { this->name_text.SetTextColor(color); }
+    void SetImage(Image& img);
     void Draw() override;
     void Focuse() override;
     void Unfocuse() override;

@@ -158,6 +158,8 @@ void TextField::KeyDown(const Event& event) {
 };
 // behavior of gui element when when typed
 void TextField::Type(char letter) {
+    if (!editable) return;  // if field is not editable
+    if (text.size() >= max_text_length) return;
     if (this->numeric && (letter < '0' || letter > '9')) return;
 
     this->text.insert(cursor_index, 1, letter);

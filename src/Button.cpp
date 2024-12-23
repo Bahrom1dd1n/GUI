@@ -31,6 +31,13 @@ Button::Button(Window* win, int x, int y, int width, int height, const std::stri
     this->color = color;
 };
 
+Button::Button(Window* win, int x, int y, int width, int height, Image& img) {
+    this->renderer = win->main_ren;
+    this->rect = {x, y, width, height};
+    this->color = {255, 255, 255, 255};
+    this->SetImage(img);
+}
+
 void Button::Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
                   const SDL_Color& color) {
     this->renderer = win->main_ren;
@@ -42,7 +49,13 @@ void Button::Init(Window* win, int x, int y, int width, int height, const std::s
     this->name_text.SetY(y + (((this->rect.h - this->name_text.GetHeight()) >> 1)));
     this->color = color;
 };
-
+void Button::SetImage(Image& new_image) {
+    this->img = new_image;
+    if (img.GetWidth() > rect.w) img.SetWidth(rect.x, true);
+    if (img.GetHeight() > rect.h) img.SetHeight(rect.h, true);
+    this->img.SetX(rect.x + ((rect.w - img.GetWidth()) >> 1));
+    this->img.SetY(rect.y + ((rect.h - img.GetHeight()) >> 1));
+}
 void Button::Draw() {
     SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(this->renderer, &rect);
@@ -63,5 +76,8 @@ void Button::Draw() {
         }
         clicked--;
     }
-    name_text.Draw();
+    if (name_text.GetText().size())
+        name_text.Draw();
+    else if (this->img)
+        img.Draw();
 };

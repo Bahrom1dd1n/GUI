@@ -6,6 +6,7 @@
 #include <SDL2/SDL_render.h>
 
 #include <cstdint>
+#include <functional>
 #include <string>
 
 #include "Element.h"
@@ -20,6 +21,8 @@ class Canvas : public Rectangle {
     int border_width = 0;
 
    public:
+    std::function<void(int, int)> click_callback;
+    std::function<void(int, int)> keydown_callback;
     Canvas(Window* win, int x, int y, int width, int height);
     inline void SetBorderColor(const SDL_Color& color) { this->color = color; }
     inline void SetBorderWidth(int width) { this->border_width = width; }
