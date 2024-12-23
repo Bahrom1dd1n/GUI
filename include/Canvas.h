@@ -22,10 +22,18 @@ class Canvas : public Rectangle {
 
    public:
     std::function<void(int, int)> click_callback;
-    std::function<void(int, int)> keydown_callback;
+    std::function<void(int)> keydown_callback;
     Canvas(Window* win, int x, int y, int width, int height);
     inline void SetBorderColor(const SDL_Color& color) { this->color = color; }
     inline void SetBorderWidth(int width) { this->border_width = width; }
+    void MouseDown(const Event& e) override {
+        if (this->click_callback) click_callback(e.button.x - this->rect.x, e.button.y - rect.y);
+    }
+    // hen key is pressed while it was focused
+    void KeyDown(const Event& e) override {
+        if (this->keydown_callback) keydown_callback(e.key.keysym.sym);
+    };
+
     void Clear(const SDL_Color& color = {255, 255, 255, 255});
     void Draw() override;
     void DrawLine(int x, int y, int x2, int y2, const SDL_Color& color);

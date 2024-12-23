@@ -64,10 +64,13 @@ class MyWin : public Window {
     } reg_var;
     struct {
         Canvas* canvas = nullptr;
-        Chart chart;                                           // map of the building
-        int floor_level = 0, block_index = 0, slot_index = 0;  // index of selected
-        int current_fl_level;                                  // level of current flor level
-        bool slot_selected = false;                            // slot selected or not
+        Chart chart;
+        // map of the building
+        SDL_Rect selected_rect = {0, 0, 0, 0};
+        int selected_floor = 0, selected_block = 0, selected_slot = 0;  // index of selected
+        int current_floor = 0;
+        int cell = 0;
+        bool slot_selected = false;  // slot selected or not
     } floor_var;
 
    public:
@@ -246,12 +249,19 @@ class MyWin : public Window {
         DrawChart(canvas, floor_var.chart, 0);
         canvas->SetBorderWidth(8);
         canvas->SetBorderColor({10, 100, 100, 255});
+        canvas->click_callback = [this](int x, int y) { SelectSlot(x, y); };
+
         for (int i = 0, y = (this->GetHeight() - floor_var.chart.floors.size() * 100 + 50) >> 1;
              i < floor_var.chart.floors.size(); i++, y += 100) {
             char name[10] = {0};
             snprintf(name, 10, "Level %d", i + 1);
             Button* but = new Button(this, 25, y, 150, 50, name, font, {255, 165, 0, 255});
-            but->click_callback = [this, i, canvas](int, int) { DrawChart(canvas, floor_var.chart, i); };
+            but->click_callback = [this, i, canvas](int, int) {
+                if (i == floor_var.current_floor) return;
+                DrawChart(canvas, floor_var.chart, i);
+                floor_var.slot_selected = false;
+                floor_var.current_floor = i;
+            };
 
             floors_page.Add(but);
         };
@@ -271,10 +281,77 @@ class MyWin : public Window {
         floors_page.Add(ret);
         floors_page.Add(choose);
         floors_page.Add(canvas);
+        floor_var.canvas = canvas;
         this->Add(&floors_page);
     }
 
-    void SelectSlot(int x, int y, Canvas*) {}
+    void SelectSlot(int x, int y) {
+        int cell = floor_var.cell;
+        if (floor_var.slot_selected && floor_var.current_floor == floor_var.selected_floor) {
+            auto& r = floor_var.selected_rect;
+            floor_var.canvas->FillRectangle(r.x, r.y, r.w, r.h, {100, 250, 100, 255});
+            floor_var.canvas->DrawRectangle(r.x, r.y, r.w, r.h, 2, {50, 50, 240, 255});
+            char number[5];
+            auto sp = floor_var.chart.floors[floor_var.selected_floor]->at(floor_var.selected_block);
+            int len = snprintf(number, 5, "%d", sp->start_index + floor_var.selected_slot);
+            auto dimension = font.GetTextDimensions(number);
+            floor_var.canvas->DrawText(((r.w - dimension.x) >> 1) + r.x, r.y + ((r.h - dimension.y) >> 1), number, len,
+                                       font, {255, 255, 255, 255});
+        }
+        floor_var.slot_selected = false;
+        int n = 0;
+
+        for (auto i : *floor_var.chart.floors[floor_var.current_floor]) {
+            n++;
+            int w, h;
+            switch (i->car_type) {
+                case 1:
+                    w = cell >> 1;
+                    h = cell;
+                    break;
+                case 2:
+                    w = cell;
+                    h = 2 * cell;
+                    break;
+                case 3:
+                    w = 2 * cell;
+                    h = 3 * cell;
+                    break;
+            }
+            int left = i->y * cell;
+            int right = left + h;
+            if (y < left) continue;
+            if (y > right) continue;
+            left = i->x * cell;
+            right = left + i->size * w;
+            if (x < left) continue;
+            if (x > right) continue;
+
+            // it is shure that blockof slot has been clicked
+            floor_var.selected_floor = floor_var.current_floor;
+            floor_var.selected_block = n - 1;
+            std::cout << "x = " << x << "\nleft = " << left << "\nw = " << w << std::endl;
+            floor_var.selected_slot = (x - left) / w;
+            floor_var.slot_selected = true;
+            right = i->x * cell + floor_var.selected_slot * w;
+
+            floor_var.selected_rect = {right, i->y * cell, w, h};
+
+            break;
+        }
+
+        if (floor_var.slot_selected) {
+            auto& r = floor_var.selected_rect;
+            floor_var.canvas->FillRectangle(r.x, r.y, r.w, r.h, {50, 250, 250, 255});
+            floor_var.canvas->DrawRectangle(r.x, r.y, r.w, r.h, 2, {50, 50, 240, 255});
+            char number[5];
+            auto sp = floor_var.chart.floors[floor_var.selected_floor]->at(floor_var.selected_block);
+            int len = snprintf(number, 5, "%d", sp->start_index + floor_var.selected_slot);
+            auto dimension = font.GetTextDimensions(number);
+            floor_var.canvas->DrawText(((r.w - dimension.x) >> 1) + r.x, r.y + ((r.h - dimension.y) >> 1), number, len,
+                                       font, {255, 255, 255, 255});
+        }
+    }
 
     void InitPayPage() {
         Rectangle* rect_frame = new Rectangle(this, 0, 0, 300, 350, {20, 20, 230, 255});
@@ -462,6 +539,7 @@ class MyWin : public Window {
         uint16_t cell_x = max_width / chart.width;
         uint16_t cell_y = max_height / chart.height;
         uint16_t cell = cell_x > cell_y ? cell_y : cell_x;
+        floor_var.cell = cell;
         Canvas* canvas = new Canvas(this, 0, 0, cell * chart.width, cell * chart.height);
         return canvas;
     }
