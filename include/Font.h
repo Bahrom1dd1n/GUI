@@ -52,7 +52,15 @@ class Font {
     void Init(const char* font_path, size_t font_size, int style = FontStyle::NORMAL);
 
     // retunr height of font
-    inline int32_t GetLetterHeight() const { return this->font_info->letter_height; };
+    inline int32_t GetLetterHeight() {
+        if (!this->font_info) return 0;
+        if (!this->font_info->texture) {
+            int w, h;
+            TTF_SizeText(font_info->_font, "A", &w, &h);
+            return h;
+        };
+        return this->font_info->letter_height;
+    };
     // retunr width of texture of given letter
     inline int32_t GetLetterWidth(char letter) const {
         if (letter < 32 || letter > 126) return 0;

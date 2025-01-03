@@ -1,5 +1,7 @@
 #include "Button.h"
 
+#include <SDL2/SDL_pixels.h>
+
 #include "Element.h"
 
 void Button::Click() {
@@ -10,7 +12,7 @@ void Button::Focuse() {};
 void Button::Unfocuse() {};
 void Button::MouseDown(const Event& event) {
     this->Click();
-    if (this->click_callback) this->click_callback(event.button.x, event.button.y);
+    if (this->click_callback) this->click_callback(event.button.x, event.button.y, event.button.button);
 }
 void Button::KeyDown(const Event& event) {};
 
@@ -20,8 +22,8 @@ Element* Button::ContainPoint(int x, int y) {
     return this;
 }
 Button::Button(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
-               const SDL_Color& color)
-    : name_text(win, x, y, name, font) {
+               const SDL_Color& color, const SDL_Color& text_color)
+    : name_text(win, x, y, name, font, text_color) {
     this->renderer = win->main_ren;
     this->rect = {x, y, width, height};
     if (name_text.GetHeight() + 2 * nm_padding >= height) name_text.SetHeight(height - 2 * nm_padding);
@@ -37,12 +39,17 @@ Button::Button(Window* win, int x, int y, int width, int height, Image& img) {
     this->color = {255, 255, 255, 255};
     this->SetImage(img);
 }
-
-void Button::Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
-                  const SDL_Color& color) {
+void Button::Init(Window* win, int x, int y, int width, int height, Image& img) {
     this->renderer = win->main_ren;
     this->rect = {x, y, width, height};
-    this->name_text.Init(win, x, y, name, font);
+    this->color = {255, 255, 255, 255};
+    this->SetImage(img);
+}
+void Button::Init(Window* win, int x, int y, int width, int height, const std::string& name, Font& font,
+                  const SDL_Color& color, const SDL_Color& text_color) {
+    this->renderer = win->main_ren;
+    this->rect = {x, y, width, height};
+    this->name_text.Init(win, x, y, name, font, text_color);
     if (name_text.GetHeight() + 2 * nm_padding >= height) name_text.SetHeight(height - 2 * nm_padding);
     if (name_text.GetWidth() + 2 * nm_padding >= width) name_text.SetWidth(width - 2 * nm_padding);
     this->name_text.SetX(x + (((this->rect.w - this->name_text.GetWidth()) >> 1)));
@@ -57,8 +64,10 @@ void Button::SetImage(Image& new_image) {
     this->img.SetY(rect.y + ((rect.h - img.GetHeight()) >> 1));
 }
 void Button::Draw() {
-    SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(this->renderer, &rect);
+    if (this->color.a) {
+        SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
+        SDL_RenderFillRect(this->renderer, &rect);
+    }
     // if (this->clicked > 0) {
     //     this->clicked--;
     //

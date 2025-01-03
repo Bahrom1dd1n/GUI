@@ -11,6 +11,7 @@ class HiddenField : public TextField {
     Image eye;
     SDL_Rect eye_src;
     bool hidden = true;
+    void LoadEmbeddedImage();
 
    public:
     HiddenField() = default;

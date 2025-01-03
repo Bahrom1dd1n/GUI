@@ -15,18 +15,19 @@ class Image : public Rectangle {
    protected:
     struct ImageInfo {
         SDL_Texture* texture = nullptr;
-        uint32_t link_count = 0;
-        uint32_t original_width = 0;
-        uint32_t original_height = 0;
+        int32_t link_count = 0;
+        int32_t original_width = 0;
+        int32_t original_height = 0;
     };
     ImageInfo* img_info = nullptr;  // information about texture, SDL_Texture , how many references to it
     double angle = 0;
     float cos_a = 1.0f;
     float sin_a = 0.0f;
-    Image(int x, int y, SDL_Renderer* ren, SDL_Texture* texture);
     void Destroy();
 
    public:
+    Image(int x, int y, SDL_Renderer* ren, SDL_Texture* texture);
+    Image(int x, int y, SDL_Renderer* ren, SDL_Surface* texture);
     inline Image() { this->img_info = nullptr; };
     Image(const Image& t);
     Image(Image&& t) noexcept;

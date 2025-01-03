@@ -12,7 +12,12 @@ class Frame : public Element {
    public:
     Frame() = default;
     inline void Add(Element* element) { this->children.push_back(element); };
-    inline const std::vector<Element*>& GetChildren() const { return this->children; }
+    inline void RemoveChild(int index) {
+        if (index >= this->children.size()) return;
+        this->children.erase(this->children.begin() + index);
+    }
+    inline void RemoveLastChild() { this->children.pop_back(); }
+    inline std::vector<Element*>& GetChildren() { return this->children; }
     void Draw() override;
     // return true if this element contains point of given coordinates
     Element* ContainPoint(int x, int y) override;

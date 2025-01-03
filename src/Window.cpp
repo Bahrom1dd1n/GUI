@@ -10,9 +10,11 @@
 
 #include "Element.h"
 
+int Window::open_sessions = 0;
 Window::Window(uint32_t x, uint32_t y, const uint32_t window_width, const uint32_t window_height,
-               const std::string& title, const SDL_Color& background_cl, uint32_t max_fps, int flags) {
+               const std::string& title, const SDL_Color& background_cl, int flags, uint32_t max_fps) {
     // Default value
+    Window::open_sessions++;
     if (max_fps)
         frame_delay = 1000 / max_fps;
     else
@@ -30,7 +32,7 @@ Window::Window(uint32_t x, uint32_t y, const uint32_t window_width, const uint32
     // The parameters are for the title, x and y position,
     // and the width and height of the window.
     window = SDL_CreateWindow(title.c_str(), x, y, window_width, window_height, flags);
-
+    this->windowID = SDL_GetWindowID(window);
     main_ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (flags | SDL_WINDOW_FULLSCREEN) {
         SDL_GetRendererOutputSize(this->main_ren, &window_rect.w, &window_rect.h);
@@ -49,6 +51,7 @@ void Window::Start() {
         int start = SDL_GetTicks();
 
         while (SDL_PollEvent(&event)) {
+            if (event.window.windowID != this->windowID) continue;
             switch (event.type) {
                 case SDL_QUIT:
                     running = false;
@@ -60,7 +63,12 @@ void Window::Start() {
                 case SDL_KEYDOWN:
                     this->OnKeyDown(event);
                     break;
-
+                case SDL_KEYUP:
+                    this->OnKeyUp(event);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    this->MouseWheel(event);
+                    break;
                 case SDL_MOUSEBUTTONDOWN:
                     this->OnMouseDown(event);
                     break;
@@ -77,16 +85,20 @@ void Window::Start() {
         if (draw_frame_callback) draw_frame_callback();
         SDL_RenderPresent(main_ren);
         this->current_time = SDL_GetTicks();
-        uint32_t time_elapsed = this->current_time - start;
-        if (time_elapsed < this->frame_delay) {
-            SDL_Delay(this->frame_delay - time_elapsed);
-            time_elapsed = frame_delay;
+        this->time_elapsed = this->current_time - start;
+        if (this->time_elapsed < this->frame_delay) {
+            SDL_Delay(this->frame_delay - this->time_elapsed);
+            this->time_elapsed = frame_delay;
         }
     }
 };
 
 void Window::Stop() {
     this->running = false;
+}
+
+void Window::MouseWheel(const Event& event) {
+    if (this->focused_element) this->focused_element->MouseWheel(event);
 }
 void Window::OnMouseDown(const SDL_Event& event) {
     printf("Muse clicked\n");
@@ -106,7 +118,7 @@ void Window::OnMouseDown(const SDL_Event& event) {
             this->focused_element = elem;
             break;
         }
-        if (mousedown_callback) mousedown_callback(event.button.x, event.button.y);
+        if (mousedown_callback) mousedown_callback(event.button.x, event.button.y, event.button.button);
     }
 
     if (!elem && focused_element) {
@@ -114,7 +126,6 @@ void Window::OnMouseDown(const SDL_Event& event) {
         this->focused_element = nullptr;
     }
 }
-
 /*void Window::OnMouseMove(int x, int y) {
     static uint64_t last_moved = 0;
     if (current_time - last_moved < _MOUSE_MOVE_DELAY) return;
@@ -145,13 +156,18 @@ void Window::OnKeyDown(const Event& event) {
     if (keydown_callback) keydown_callback(event.key.keysym.sym);
 }
 
+void Window::OnKeyUp(const Event& event) {
+    if (this->keyup_callback) keyup_callback(event.key.keysym.sym);
+}
+
 void Window::Add(Element* elem) {
     this->children.push_back(elem);
 }
 
 Window::~Window() {
     printf("Window deleted\n");
+    Window::open_sessions--;
     SDL_DestroyRenderer(this->main_ren);
     SDL_DestroyWindow(this->window);
-    SDL_Quit();
+    if (!Window::open_sessions) SDL_Quit();
 };

@@ -23,6 +23,7 @@ class Element {
     // returns Element under point
     virtual Element* ContainPoint(int x, int y) = 0;
     // behavior of gui elemnt when it's has been clicked by mouse
+    virtual void MouseWheel(const Event& event) {};
     virtual void MouseDown(const Event& e) = 0;
     // behavior of gui element when key is pressed while it was focused
     virtual void KeyDown(const Event& e) = 0;

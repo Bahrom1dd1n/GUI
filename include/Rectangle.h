@@ -18,6 +18,7 @@ class Rectangle : public Element {
     Rectangle() = default;
     Rectangle(Window* win, int x, int y, int width, int height, const SDL_Color color);
     void Init(Window* win, int x, int y, int width, int height, const SDL_Color color);
+    inline void SetColor(const SDL_Color& col) { this->color = col; }
     inline void SetX(const int x) { this->rect.x = x; }
     inline void SetY(const int y) { this->rect.y = y; }
     inline void SetCenterX(int x) { rect.x = x - (rect.w >> 1); }

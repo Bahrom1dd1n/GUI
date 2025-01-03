@@ -13,7 +13,6 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 # Project name
-TARGET = test
 STATIC_LIB = gui.a
 
 # Find all source files in SRC_DIR
@@ -24,16 +23,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 
 # Default target
 .PHONY: all
-all: $(BIN_DIR)/$(TARGET)
-
-# Linking the final executable
-$(BIN_DIR)/$(TARGET): $(STATIC_LIB) $(TARGET).o
-	@mkdir -p $(BIN_DIR)
-	$(CXX) -g -o $@ $(TARGET).o ./$(STATIC_LIB) $(CLIBS)
-
-# Compile test.cpp into an object file
-$(TARGET).o: $(TARGET).cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all: $(STATIC_LIB)
 
 # Building the static library
 $(STATIC_LIB): $(OBJS)

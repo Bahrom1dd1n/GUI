@@ -6,7 +6,6 @@
 
 #include <cmath>
 #include <cstddef>
-#include <cstdint>
 #include <iostream>
 #include <ostream>
 
@@ -19,7 +18,17 @@ Image::Image(int x, int y, SDL_Renderer* ren, SDL_Texture* _texture) {
     this->renderer = ren;
     if (!_texture) return;  // if no texture is provided exit
     SDL_QueryTexture(_texture, NULL, NULL, &rect.w, &rect.h);
-    this->img_info = new ImageInfo{_texture, 1, (uint32_t)rect.w, (uint32_t)rect.h};
+
+    this->img_info = new ImageInfo{_texture, 1, rect.w, rect.h};
+}
+
+Image::Image(int x, int y, SDL_Renderer* ren, SDL_Surface* surf) {
+    this->rect.x = x;
+    this->rect.y = y;
+    this->renderer = ren;
+    if (!surf) return;  // if no texture is provided exit
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surf);
+    this->img_info = new ImageInfo{texture, 1, surf->w, surf->h};
 }
 
 Image::Image(const Image& t) {
@@ -48,7 +57,7 @@ Image::Image(Window* win, int x, int y, const char* path) {
     this->rect.x = x;
     this->rect.y = y;
     SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
-    this->img_info = new ImageInfo{temp, 1, (uint32_t)rect.w, (uint32_t)rect.h};
+    this->img_info = new ImageInfo{temp, 1, rect.w, rect.h};
 }
 
 Image& Image::operator=(const Image& t) {
@@ -84,7 +93,7 @@ void Image::Load(const char* path, Window* win) {
         this->rect.x = 0;
         this->rect.y = 0;
         SDL_QueryTexture(temp, NULL, NULL, &rect.w, &rect.h);
-        this->img_info = new ImageInfo{temp, 1, (uint32_t)rect.w, (uint32_t)rect.h};
+        this->img_info = new ImageInfo{temp, 1, rect.w, rect.h};
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -132,7 +141,7 @@ inline void Image::Destroy() {
     if (this->img_info) {
         if (this->img_info->link_count == 1) {
             SDL_DestroyTexture(this->img_info->texture);
-            delete[] this->img_info;
+            delete this->img_info;
             this->img_info = nullptr;
             return;
         }

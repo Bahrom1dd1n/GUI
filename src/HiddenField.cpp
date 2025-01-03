@@ -3,16 +3,40 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
 
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 
 #include "Element.h"
 #include "Image.h"
 #include "TextField.h"
+#include "image_data.h"  // emded image data of eye icon
+
+void HiddenField::LoadEmbeddedImage() {
+    SDL_RWops* rw = SDL_RWFromConstMem(hide_png, hide_png_len);
+    if (!rw) {
+        printf("Failed to create RWops from memory: %s", SDL_GetError());
+        exit(1);
+        return;
+    }
+
+    SDL_Surface* image = IMG_Load_RW(rw, 1);  // 1 means SDL will free the RWops
+    if (!image) {
+        printf("Failed to load image from RWops: %s", IMG_GetError());
+        exit(1);
+    }
+    this->global_img = Image(0, 0, this->renderer, image);
+    SDL_FreeSurface(image);
+}
 Image HiddenField::global_img;
 HiddenField::HiddenField(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color)
     : TextField(win, x, y, length, font, bg_color) {
-    if (!HiddenField::global_img.Loaded()) global_img.Init(win, 0, 0, "assets/images/hide.png");
+    if (!HiddenField::global_img) {
+        this->LoadEmbeddedImage();
+    }
+    global_img.Init(win, 0, 0, "assets/images/hide.png");
     this->eye = global_img;
     eye.SetX(rect.x + rect.w);
     eye.SetY(rect.y);
@@ -24,7 +48,7 @@ HiddenField::HiddenField(Window* win, int x, int y, uint32_t length, Font& font,
 void HiddenField::Init(Window* win, int x, int y, uint32_t length, Font& font, const SDL_Color& bg_color) {
     TextField::Init(win, x, y, length, font);
 
-    if (!HiddenField::global_img.Loaded()) global_img.Init(win, 0, 0, "assets/images/hide.png");
+    if (!HiddenField::global_img) this->LoadEmbeddedImage();
     this->eye = global_img;
     eye.SetX(rect.x + rect.w);
     eye.SetY(rect.y);

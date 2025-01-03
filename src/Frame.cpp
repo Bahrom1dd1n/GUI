@@ -3,14 +3,15 @@
 #include "Element.h"
 void Frame::Draw() {
     for (auto i : children) {
-        i->Draw();
+        if (i->IsVisible()) i->Draw();
     }
 }
 // return true if this element contains point of given coordinates
 Element* Frame::ContainPoint(int x, int y) {
     for (auto it = children.rbegin(); it != children.rend(); it++) {
-        if ((*it)->IsVisible() && (*it)->ContainPoint(x, y)) {
-            return *it;
+        if ((*it)->IsVisible()) {
+            Element* el = (*it)->ContainPoint(x, y);
+            if (el) return el;
         };
     }
     return nullptr;

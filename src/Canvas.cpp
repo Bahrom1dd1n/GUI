@@ -24,9 +24,9 @@ void Canvas::Clear(const SDL_Color& color) {
 void Canvas::Draw() {
     SDL_RenderCopy(this->renderer, this->texture, NULL, &this->rect);
     if (!this->border_width) return;
+    // drawing borders
     SDL_Rect border = {rect.x - border_width, rect.y, border_width, rect.h};
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    // drawing borders
     SDL_RenderFillRect(this->renderer, &border);
     border.x = rect.x + rect.w;
     SDL_RenderFillRect(this->renderer, &border);
